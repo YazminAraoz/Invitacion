@@ -1,856 +1,775 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Save the Date - Yazmin & Gonzalo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yazmín & Gonzalo - Save the Date</title>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-    <!-- Google Fonts: Edwardian Gothic Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       RESET & BASE STYLES
+       ========================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    :root {
+      --bg-cream: #FAF6EE;
+      --bg-cream-dark: #F0E8D8;
+      --midnight: #0B1626;
+      --midnight-light: #182B45;
+      --gold: #C5A059;
+      --gold-light: #E0C078;
+      --border-gold: rgba(197, 160, 89, 0.4);
+      --font-display: 'Cinzel Decorative', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-body: 'Cormorant Garamond', serif;
+    }
 
-    <style>
-        :root {
-            --bg-parchment: #FAF6EE;
-            --card-parchment: #F2ECDC;
-            --border-gold: #C5A059;
-            --gold-bright: #D4AF37;
-            --midnight: #0B1626;
-            --midnight-light: #162840;
-        }
+    body {
+      background-color: var(--bg-cream);
+      color: var(--midnight);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100dvh;
+      position: relative;
+    }
 
-        /* Core reset and viewport handling */
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden !important;
-            background-color: var(--bg-parchment);
-            color: var(--midnight);
-            font-family: 'Cormorant Garamond', serif;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            margin: 0;
-            padding: 0;
-        }
+    /* Floating Music Controls */
+    .audio-control {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 999;
+      background: var(--midnight);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(11, 22, 38, 0.2);
+    }
 
-        .font-cinzel { font-family: 'Cinzel Decorative', serif; }
-        .font-sans-clean { font-family: 'Montserrat', sans-serif; }
+    /* ==========================================
+       ENVELOPE OVERLAY (SCREEN 1 - HIDDEN INVITATION)
+       ========================================== */
+    #envelopeOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background-color: var(--midnight);
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.8) 0%, rgba(11, 22, 38, 1) 80%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: opacity 1.2s ease-in-out, visibility 1.2s ease-in-out;
+    }
 
-        /* Storybook Parchment Frame */
-        .parchment-frame {
-            background: linear-gradient(145deg, #FFFFFF 0%, var(--card-parchment) 100%);
-            border: 1.5px solid var(--border-gold);
-            box-shadow: 0 10px 30px rgba(11, 22, 38, 0.06), inset 0 0 25px rgba(197, 160, 89, 0.1);
-            position: relative;
-        }
+    #envelopeOverlay.opened {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-        .parchment-frame::after {
-            content: '';
-            position: absolute;
-            inset: 5px;
-            border: 1px solid rgba(197, 160, 89, 0.35);
-            pointer-events: none;
-            border-radius: inherit;
-        }
+    .envelope-wrapper {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-cream);
+      border: 2px solid var(--gold);
+      padding: 30px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      position: relative;
+    }
 
-        /* Mobile GPU-Optimized Opening Envelope */
-        .envelope-wrapper {
-            position: relative;
-            width: clamp(280px, 88vw, 390px);
-            height: clamp(220px, 62vw, 270px);
-            margin: 0 auto;
-            background: linear-gradient(180deg, #122138 0%, #0B1626 100%);
-            border-radius: 14px;
-            border: 1.5px solid var(--border-gold);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
-            overflow: hidden;
-            will-change: transform;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
+    .celestial-svg {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 15px auto;
+      display: block;
+    }
 
-        .letter-card {
-            position: absolute;
-            inset: 8px;
-            background: linear-gradient(135deg, #FFFFFF 0%, #F4EEDC 100%);
-            border: 1px solid var(--border-gold);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            text-align: center;
-            z-index: 2;
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
-        }
+    .envelope-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--midnight);
+      margin-bottom: 5px;
+    }
 
-        .envelope-flap-top {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 52%;
-            background: #15263d;
-            clip-path: polygon(0 0, 100% 0, 50% 100%);
-            z-index: 4;
-            border-bottom: 1.5px solid var(--border-gold);
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
-        }
+    .envelope-subtitle {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 25px;
+    }
 
-        /* Wax Seal Touch Element */
-        .wax-seal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 72px;
-            height: 72px;
-            background: radial-gradient(circle at 35% 35%, #E2C068 0%, #C5A059 50%, #8C6A27 100%);
-            border-radius: 50%;
-            border: 2px solid #FFFFFF;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-            z-index: 5;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    .wax-seal-btn {
+      background: var(--midnight);
+      border: 2px solid var(--gold);
+      color: var(--gold-light);
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      margin: 0 auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.4);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
 
-        .wax-seal:active {
-            transform: translate(-50%, -50%) scale(0.92);
-        }
+    .wax-seal-btn:hover, .wax-seal-btn:active {
+      transform: scale(1.08);
+      border-color: var(--gold-light);
+    }
 
-        /* Opened Envelope State */
-        .is-open .envelope-flap-top {
-            transform: translateY(-100%);
-            opacity: 0;
-        }
+    .wax-seal-btn span {
+      font-family: var(--font-heading);
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
 
-        .is-open .letter-card {
-            transform: translateY(-90px) scale(1.02);
-            z-index: 6;
-        }
+    /* ==========================================
+       MAIN INVITATION CONTENT (SCREEN 2)
+       ========================================== */
+    #mainInvitation {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: none; /* Hidden until envelope opens */
+    }
 
-        .is-open .wax-seal {
-            opacity: 0;
-            pointer-events: none;
-            transform: translate(-50%, -50%) scale(0.4);
-        }
+    #mainInvitation.visible {
+      display: block;
+      animation: fadeInContent 1.5s ease-out forwards;
+    }
 
-        /* Decorative Gold Dividers */
-        .gold-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
+    @keyframes fadeInContent {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .gold-divider::before, .gold-divider::after {
-            content: '';
-            height: 1px;
-            width: 40px;
-            background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
-        }
+    /* Section Containers */
+    .section-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-gold);
+      padding: 30px 20px;
+      margin-bottom: 35px;
+      border-radius: 4px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+    }
 
-        /* Music Equalizer Wave */
-        @keyframes eq-anim {
-            0%, 100% { height: 4px; }
-            50% { height: 14px; }
-        }
-        .eq-bar {
-            width: 3px;
-            background-color: var(--border-gold);
-            border-radius: 2px;
-            animation: eq-anim 1.2s infinite ease-in-out;
-        }
-        .eq-bar:nth-child(2) { animation-delay: 0.2s; }
-        .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+    .section-card::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(197, 160, 89, 0.2);
+      pointer-events: none;
+    }
 
-        /* Recording Pulse */
-        .rec-pulse {
-            animation: pulse-ring 1.5s infinite;
-        }
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(11, 22, 38, 0.6); }
-            70% { box-shadow: 0 0 0 10px rgba(11, 22, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(11, 22, 38, 0); }
-        }
-    </style>
+    /* Header & Names */
+    .header-names {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--midnight);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .header-ampersand {
+      font-family: var(--font-body);
+      font-style: italic;
+      color: var(--gold);
+      display: block;
+      font-size: 1.8rem;
+    }
+
+    .storybook-quote {
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--midnight-light);
+      margin: 20px 0;
+    }
+
+    .event-date-large {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      color: var(--midnight);
+      letter-spacing: 1px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .event-time {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+
+    /* Countdown Timer */
+    .timer-grid {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .timer-box {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-gold);
+      padding: 10px 12px;
+      min-width: 65px;
+      border-radius: 4px;
+    }
+
+    .timer-num {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--midnight);
+      font-weight: 700;
+      display: block;
+    }
+
+    .timer-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+
+    /* Buttons */
+    .btn-gothic {
+      display: inline-block;
+      background: var(--midnight);
+      color: var(--gold-light);
+      border: 1px solid var(--gold);
+      padding: 12px 24px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      margin-top: 15px;
+      border-radius: 2px;
+      transition: background 0.3s ease, color 0.3s ease;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .btn-gothic:hover {
+      background: var(--midnight-light);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--midnight);
+      border: 1px solid var(--midnight);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--midnight);
+      color: var(--gold);
+    }
+
+    /* Form Styles */
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--midnight);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-gold);
+      background: var(--bg-cream);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--midnight);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--midnight);
+    }
+
+    .phone-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .phone-row select {
+      width: 110px;
+    }
+
+    /* Audio Recorder */
+    .audio-recorder-box {
+      background: var(--bg-cream);
+      border: 1px dashed var(--gold);
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .rec-btn {
+      background: var(--midnight);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: var(--font-heading);
+    }
+
+    /* Digital Gift Box */
+    .gift-box {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-gold);
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 0.95rem;
+    }
+
+    .gift-code {
+      font-family: monospace;
+      font-weight: bold;
+      color: var(--midnight);
+      background: #FFFFFF;
+      padding: 4px 8px;
+      border: 1px solid var(--border-gold);
+      display: inline-block;
+      margin: 5px 0;
+      user-select: all;
+    }
+
+    .notice-info {
+      font-size: 0.8rem;
+      color: var(--midnight-light);
+      margin-top: 12px;
+      font-style: italic;
+    }
+  </style>
 </head>
-<body class="min-h-[100dvh] flex flex-col justify-between selection:bg-slate-800 selection:text-amber-100">
+<body>
 
-    <header class="sticky top-0 z-50 bg-[#FAF6EE]/95 backdrop-blur-md border-b border-[#C5A059]/30 px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-2">
-            <button id="musicToggleBtn" type="button" class="w-10 h-10 rounded-full border border-[#C5A059] bg-[#0B1626] text-amber-200 flex items-center justify-center active:scale-95 transition-transform shadow-sm min-w-[40px]" title="Música de fondo">
-                <i id="musicIcon" class="fa-solid fa-play text-xs"></i>
-            </button>
-            <div id="equalizer" class="hidden flex items-center gap-1 h-5 px-1.5 bg-slate-900/5 rounded border border-slate-900/10">
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-                <div class="eq-bar"></div>
-            </div>
+  <!-- Floating Audio Controls -->
+  <button class="audio-control" id="audioToggleBtn" onclick="toggleAudio()">
+    <span id="audioIcon">🎵</span> <span id="audioText">Música</span>
+  </button>
+
+  <!-- ==========================================
+       SCREEN 1: ENVELOPE OVERLAY (NO DATA VISIBLE)
+       ========================================== -->
+  <div id="envelopeOverlay">
+    <div class="envelope-wrapper">
+      <!-- Sun & Moon SVG -->
+      <svg class="celestial-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#C5A059" stroke-width="1.5" />
+        <path d="M 50 10 A 40 40 0 0 1 50 90 A 25 25 0 0 0 50 10" fill="#0B1626" stroke="#C5A059" stroke-width="1" />
+        <circle cx="65" cy="40" r="3" fill="#C5A059" />
+        <path d="M 30 50 Q 40 35 50 50 Q 40 65 30 50" fill="#C5A059" />
+      </svg>
+      <div class="envelope-title">Yazmín & Gonzalo</div>
+      <div class="envelope-subtitle">Save the Date</div>
+      
+      <button class="wax-seal-btn" onclick="openEnvelope()" aria-label="Abrir Invitación">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E0C078" stroke-width="1.5">
+          <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>ABRIR</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 2: MAIN INVITATION
+       ========================================== -->
+  <main id="mainInvitation">
+    
+    <!-- Hero / Names Section -->
+    <section class="section-card">
+      <div class="header-names">
+        Yazmín
+        <span class="header-ampersand">y</span>
+        Gonzalo
+      </div>
+      <p class="storybook-quote">"Un capítulo eterno que comienza bajo el mismo cielo."</p>
+      <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
+      <div class="event-time">12:45 HS</div>
+
+      <!-- Countdown -->
+      <div class="timer-grid">
+        <div class="timer-box"><span class="timer-num" id="dias">00</span><span class="timer-label">Días</span></div>
+        <div class="timer-box"><span class="timer-num" id="horas">00</span><span class="timer-label">Hs</span></div>
+        <div class="timer-box"><span class="timer-num" id="minutos">00</span><span class="timer-label">Min</span></div>
+        <div class="timer-box"><span class="timer-num" id="segundos">00</span><span class="timer-label">Seg</span></div>
+      </div>
+    </section>
+
+    <!-- Location & Calendar -->
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
+      <p><strong>Los Cipreses 1</strong></p>
+      <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
+      <p style="font-size: 0.85rem; color: var(--gold); margin-top: 4px;">(A 10′ del centro de Adrogué)</p>
+
+      <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button>
+      <br>
+      <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
+    </section>
+
+    <!-- Dress Code -->
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 8px;">DRESS CODE</h2>
+      <p style="font-family: var(--font-heading); letter-spacing: 2px; color: var(--gold); text-transform: uppercase;">Formal Gala</p>
+      <p style="font-size: 0.9rem; margin-top: 5px;">Elegancia clásica para una jornada inolvidable.</p>
+    </section>
+
+    <!-- Diplomatic Gifts Section -->
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
+      <p style="font-size: 0.95rem;">Su presencia es nuestro mayor regalo. Debido a cuestiones de espacio, no podremos recibir presentes físicos de gran tamaño, pero si desean realizarnos un obsequio, pueden hacerlo de forma digital:</p>
+      
+      <div class="gift-box">
+        <p><strong>Alias:</strong> <span class="gift-code" id="aliasCode">YAZMIN.GONZALO.BODA</span></p>
+        <p><strong>CBU:</strong> <span class="gift-code" id="cbuCode">0000003100012345678901</span></p>
+        <button class="btn-gothic btn-secondary" style="margin-top:8px; padding:6px 12px; font-size:0.75rem;" onclick="copyAlias()">COPIAR ALIAS</button>
+      </div>
+    </section>
+
+    <!-- RSVP Form -->
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
+      
+      <form id="rsvpForm" onsubmit="handleRSVP(event)">
+        <div class="form-group">
+          <label for="fullName">Nombre y Apellido *</label>
+          <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmín Pérez">
         </div>
 
-        <div class="font-cinzel text-xs sm:text-base font-bold text-[#0B1626] tracking-wider truncate px-1">
-            Yazmin & Gonzalo
+        <div class="form-group">
+          <label for="attending">¿Asistirás? *</label>
+          <select id="attending" class="form-control" required>
+            <option value="Sí">Sí, asistiré con gusto</option>
+            <option value="No">Lamentablemente no podré asistir</option>
+          </select>
         </div>
 
-        <a href="#rsvp" class="bg-[#0B1626] text-amber-100 border border-[#C5A059] active:scale-95 transition-transform font-sans-clean text-[11px] font-semibold px-3 py-2 rounded-md flex items-center gap-1.5 shadow-sm">
-            <i class="fa-brands fa-whatsapp text-emerald-400 text-xs"></i>
-            <span>Confirmar</span>
-        </a>
-    </header>
-
-    <main class="max-w-2xl mx-auto px-3.5 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-10 w-full flex-1">
-
-        <!-- SCREEN 1: ENVELOPE COVER (ONLY THIS IS SHOWN INITIALLY) -->
-        <section id="envelopeSection" class="min-h-[78dvh] flex flex-col items-center justify-center text-center py-2">
-            <div class="mb-5 space-y-1.5 px-2">
-                <span class="font-cinzel text-[10px] sm:text-xs tracking-[0.25em] text-[#C5A059] uppercase font-bold">Invitación de Boda</span>
-                <h1 class="font-cinzel text-2xl sm:text-4xl text-[#0B1626] font-bold tracking-wide">Yazmin & Gonzalo</h1>
-                <p class="font-sans-clean text-xs text-gray-600">Toca el sello de cera dorado para desplegar</p>
-            </div>
-
-            <!-- Interactive Envelope -->
-            <div id="envelopeContainer" class="envelope-wrapper my-2">
-                <div class="envelope-flap-top"></div>
-
-                <div id="waxSeal" class="wax-seal" role="button" tabindex="0">
-                    <span class="font-cinzel font-bold text-amber-100 text-xs tracking-widest">Y&G</span>
-                    <i class="fa-solid fa-sun text-[10px] text-amber-200 mt-0.5"></i>
-                </div>
-
-                <div class="letter-card">
-                    <!-- Engraved Sun and Moon SVGs -->
-                    <div class="flex items-center gap-2 text-[#C5A059] mb-1">
-                        <svg class="w-6 h-6" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-                            <circle cx="50" cy="50" r="22"></circle>
-                            <path d="M50 12 L50 22 M50 78 L50 88 M12 50 L22 50 M78 50 L88 50" stroke-linecap="round"></path>
-                        </svg>
-                        <svg class="w-6 h-6" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-                            <path d="M50 20 A30 30 0 1 0 80 50 A20 20 0 0 1 50 20 Z"></path>
-                        </svg>
-                    </div>
-                    <span class="font-cinzel text-[10px] tracking-widest text-[#0B1626] uppercase font-bold">Save The Date</span>
-                    <p class="font-cinzel text-base font-bold text-[#0B1626] my-0.5">4 de Septiembre, 2027</p>
-                    <p class="font-sans-clean text-[10px] text-gray-600">Burzaco, Buenos Aires</p>
-                </div>
-            </div>
-
-            <button id="openEnvelopeBtn" type="button" class="mt-5 px-6 py-3 rounded-full bg-[#0B1626] border border-[#C5A059] text-amber-200 font-sans-clean text-xs font-semibold tracking-wider uppercase shadow-md flex items-center gap-2 active:scale-95 transition-transform min-h-[48px]">
-                <i class="fa-solid fa-envelope-open text-amber-400"></i>
-                <span>ABRIR INVITACIÓN</span>
-            </button>
-        </section>
-
-        <!-- SCREEN 2: INVITATION MAIN CONTENT (REVEALED AFTER OPENING) -->
-        <div id="invitationContent" class="hidden opacity-0 transition-opacity duration-700 space-y-6 sm:space-y-10">
-
-            <!-- SECTION 1: HERO & CELESTIAL TITLE -->
-            <section class="parchment-frame rounded-2xl p-5 sm:p-8 text-center overflow-hidden">
-                <!-- Sun & Moon Engraved Header -->
-                <div class="flex items-center justify-center gap-3 my-1 text-[#C5A059]">
-                    <svg class="w-6 h-6 transform scale-x-[-1]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M50 20 A30 30 0 1 0 80 50 A20 20 0 0 1 50 20 Z"></path>
-                    </svg>
-                    <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-                        <circle cx="50" cy="50" r="22"></circle>
-                        <path d="M50 10 L50 22 M50 78 L50 90 M10 50 L20 50 M80 50 L90 50 M22 22 L30 30 M70 70 L78 78 M22 78 L30 70 M70 30 L78 22" stroke-linecap="round"></path>
-                    </svg>
-                    <svg class="w-6 h-6" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M50 20 A30 30 0 1 0 80 50 A20 20 0 0 1 50 20 Z"></path>
-                    </svg>
-                </div>
-
-                <span class="font-cinzel text-[10px] tracking-[0.2em] text-[#0B1626] uppercase font-bold">
-                    Reserva la Fecha
-                </span>
-
-                <h2 class="font-cinzel text-2xl sm:text-4xl text-[#0B1626] font-bold my-2 tracking-wide">
-                    Yazmin & Gonzalo
-                </h2>
-
-                <div class="gold-divider my-2"></div>
-
-                <p class="font-sans-clean text-xs sm:text-sm text-gray-800 max-w-md mx-auto my-2 leading-relaxed font-medium">
-                    Nos casamos y queremos compartir la alegría de este día tan especial con vos.
-                </p>
-
-                <!-- COUNTDOWN TIMER -->
-                <div class="mt-5 pt-4 border-t border-[#C5A059]/30">
-                    <p class="font-cinzel text-[10px] uppercase tracking-widest text-[#0B1626] mb-2.5 font-bold">Cuenta Regresiva</p>
-                    <div id="countdown" class="grid grid-cols-4 gap-1.5 sm:gap-3 max-w-xs sm:max-w-md mx-auto">
-                        <div class="bg-white/90 border border-[#C5A059]/40 rounded-xl p-2 shadow-sm">
-                            <span id="days" class="font-cinzel text-lg sm:text-2xl font-bold text-[#0B1626] block">00</span>
-                            <span class="font-sans-clean text-[9px] text-gray-600 uppercase font-semibold">Días</span>
-                        </div>
-                        <div class="bg-white/90 border border-[#C5A059]/40 rounded-xl p-2 shadow-sm">
-                            <span id="hours" class="font-cinzel text-lg sm:text-2xl font-bold text-[#0B1626] block">00</span>
-                            <span class="font-sans-clean text-[9px] text-gray-600 uppercase font-semibold">Hs</span>
-                        </div>
-                        <div class="bg-white/90 border border-[#C5A059]/40 rounded-xl p-2 shadow-sm">
-                            <span id="minutes" class="font-cinzel text-lg sm:text-2xl font-bold text-[#0B1626] block">00</span>
-                            <span class="font-sans-clean text-[9px] text-gray-600 uppercase font-semibold">Min</span>
-                        </div>
-                        <div class="bg-white/90 border border-[#C5A059]/40 rounded-xl p-2 shadow-sm">
-                            <span id="seconds" class="font-cinzel text-lg sm:text-2xl font-bold text-[#0B1626] block">00</span>
-                            <span class="font-sans-clean text-[9px] text-gray-600 uppercase font-semibold">Seg</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ADD TO CALENDAR -->
-                <div class="mt-5 pt-2 flex flex-col sm:flex-row justify-center gap-2">
-                    <button id="downloadIcsBtn" type="button" class="bg-[#0B1626] text-amber-100 border border-[#C5A059] active:scale-95 transition-transform font-sans-clean text-xs font-semibold px-4 py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm min-h-[44px]">
-                        <i class="fa-solid fa-calendar-plus text-amber-400"></i>
-                        <span>Descargar Calendario (.ics)</span>
-                    </button>
-
-                    <a id="googleCalBtn" href="#" target="_blank" rel="noopener noreferrer" class="bg-white text-[#0B1626] border border-[#C5A059] active:scale-95 transition-transform font-sans-clean text-xs font-semibold px-4 py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm min-h-[44px]">
-                        <i class="fa-brands fa-google text-blue-900"></i>
-                        <span>Google Calendar</span>
-                    </a>
-                </div>
-            </section>
-
-            <!-- SECTION 2: EVENT DETAILS & MAP -->
-            <section class="parchment-frame rounded-2xl p-5 sm:p-7">
-                <div class="text-center mb-5">
-                    <span class="font-cinzel text-[10px] tracking-widest text-[#C5A059] uppercase font-bold">Ubicación & Horario</span>
-                    <h3 class="font-cinzel text-xl sm:text-2xl text-[#0B1626] font-bold mt-0.5">Cuándo & Dónde</h3>
-                    <div class="gold-divider mt-2"></div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-                    <div class="bg-white/80 p-4 rounded-xl border border-[#C5A059]/30 text-center flex flex-col justify-center space-y-3 shadow-sm">
-                        <div class="flex items-center gap-3 justify-center">
-                            <div class="w-9 h-9 rounded-full bg-[#0B1626] text-amber-200 flex items-center justify-center shrink-0 border border-[#C5A059]">
-                                <i class="fa-regular fa-calendar-days text-sm"></i>
-                            </div>
-                            <div class="text-left">
-                                <h4 class="font-cinzel font-bold text-xs text-[#0B1626]">Fecha</h4>
-                                <p class="font-sans-clean font-bold text-sm text-gray-900">4 de Septiembre de 2027</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3 justify-center">
-                            <div class="w-9 h-9 rounded-full bg-[#0B1626] text-amber-200 flex items-center justify-center shrink-0 border border-[#C5A059]">
-                                <i class="fa-regular fa-clock text-sm"></i>
-                            </div>
-                            <div class="text-left">
-                                <h4 class="font-cinzel font-bold text-xs text-[#0B1626]">Hora</h4>
-                                <p class="font-sans-clean font-bold text-sm text-gray-900">12:45 HS</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white/80 p-4 rounded-xl border border-[#C5A059]/30 text-center flex flex-col justify-between shadow-sm space-y-3">
-                        <div>
-                            <div class="w-9 h-9 rounded-full bg-[#0B1626] text-amber-200 flex items-center justify-center mx-auto mb-1.5 border border-[#C5A059]">
-                                <i class="fa-solid fa-location-dot text-sm"></i>
-                            </div>
-                            <h4 class="font-cinzel font-bold text-sm text-[#0B1626]">Lugar</h4>
-                            <p class="font-sans-clean font-bold text-gray-900 text-sm">Los Cipreses 1</p>
-                            <p class="font-sans-clean text-xs text-gray-700">25 de Mayo 1696, Min. Rivadavia</p>
-                            <p class="font-sans-clean text-xs text-gray-600">Alte. Brown, Burzaco, Argentina</p>
-                            <span class="font-sans-clean text-[10px] font-semibold text-slate-800 mt-1.5 bg-amber-100/70 py-0.5 px-2.5 rounded-full inline-block border border-amber-300/50">
-                                (a 10′ del centro de Adrogué)
-                            </span>
-                        </div>
-
-                        <a href="https://maps.google.com/?q=25+de+Mayo+1696+Burzaco+Buenos+Aires+Argentina" target="_blank" rel="noopener noreferrer" class="bg-[#0B1626] text-amber-100 border border-[#C5A059] active:scale-95 transition-transform font-sans-clean text-xs font-semibold py-2.5 px-3 rounded-lg w-full flex items-center justify-center gap-2 shadow-md min-h-[44px]">
-                            <i class="fa-solid fa-map-location-dot text-amber-400"></i>
-                            <span>Ver en Google Maps</span>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: DRESS CODE -->
-            <section class="parchment-frame rounded-2xl p-5 text-center">
-                <div class="w-9 h-9 rounded-full bg-[#0B1626] text-amber-200 flex items-center justify-center mx-auto mb-1.5 border border-[#C5A059]">
-                    <i class="fa-solid fa-user-tie text-sm"></i>
-                </div>
-                <span class="font-cinzel text-[10px] tracking-widest text-[#C5A059] uppercase font-bold">Código de Vestimenta</span>
-                <h3 class="font-cinzel text-xl text-[#0B1626] font-bold mt-0.5">Dress Code</h3>
-                <div class="gold-divider my-1.5"></div>
-                <p class="font-cinzel text-lg font-bold text-[#0B1626]">Formal Gala</p>
-                <p class="font-sans-clean text-xs text-gray-700 max-w-sm mx-auto mt-0.5">
-                    Les pedimos asistir con vestimenta formal gala para acompañarnos en esta celebración.
-                </p>
-            </section>
-
-            <!-- SECTION 4: DIGITAL GIFT NOTE -->
-            <section class="parchment-frame rounded-2xl p-5 text-center">
-                <div class="w-9 h-9 rounded-full bg-[#0B1626] text-amber-200 flex items-center justify-center mx-auto mb-1.5 border border-[#C5A059]">
-                    <i class="fa-solid fa-gift text-sm"></i>
-                </div>
-                <span class="font-cinzel text-[10px] tracking-widest text-[#C5A059] uppercase font-bold">Mesa de Regalos</span>
-                <h3 class="font-cinzel text-xl text-[#0B1626] font-bold mt-0.5">Un Gesto de Cariño</h3>
-                <div class="gold-divider my-1.5"></div>
-
-                <p class="font-sans-clean text-xs text-gray-800 max-w-md mx-auto leading-relaxed">
-                    Su presencia es nuestro mayor regalo. Como no contamos con espacio para obsequios físicos grandes, quienes deseen hacernos un presente pueden optar por un gesto digital o transferencia.
-                </p>
-
-                <div class="mt-3.5">
-                    <button id="toggleBankDetailsBtn" type="button" class="bg-white border border-[#C5A059] text-[#0B1626] active:scale-95 transition-transform font-sans-clean text-xs font-bold px-4 py-2.5 rounded-lg inline-flex items-center gap-2 shadow-sm min-h-[44px]">
-                        <i class="fa-solid fa-piggy-bank text-[#C5A059]"></i>
-                        <span>Ver Datos de CBU / Alias</span>
-                        <i id="bankArrow" class="fa-solid fa-chevron-down text-xs ml-1 transition-transform"></i>
-                    </button>
-
-                    <div id="bankDetailsBox" class="hidden mt-3 max-w-sm mx-auto p-3.5 bg-white/90 border border-[#C5A059]/40 rounded-xl text-left font-sans-clean text-xs space-y-2.5 shadow-inner">
-                        <div>
-                            <span class="text-gray-500 block text-[10px]">Titulares:</span>
-                            <span class="font-bold text-[#0B1626]">Yazmin y Gonzalo</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-amber-50/70 p-2 rounded-lg border border-amber-200/60">
-                            <div class="overflow-hidden">
-                                <span class="text-gray-500 block text-[10px]">Alias:</span>
-                                <span id="aliasText" class="font-mono font-bold text-gray-900 truncate block">BODA.YAZMIN.GONZALO</span>
-                            </div>
-                            <button id="copyAliasBtn" type="button" class="bg-[#0B1626] text-amber-100 text-[10px] px-3 py-1.5 rounded font-semibold shrink-0 ml-2 min-h-[36px]">Copiar</button>
-                        </div>
-                        <div class="flex items-center justify-between bg-amber-50/70 p-2 rounded-lg border border-amber-200/60">
-                            <div class="overflow-hidden">
-                                <span class="text-gray-500 block text-[10px]">CBU:</span>
-                                <span id="cbuText" class="font-mono font-bold text-gray-900 truncate block">0000003100012345678901</span>
-                            </div>
-                            <button id="copyCbuBtn" type="button" class="bg-[#0B1626] text-amber-100 text-[10px] px-3 py-1.5 rounded font-semibold shrink-0 ml-2 min-h-[36px]">Copiar</button>
-                        </div>
-                        <p id="copyFeedback" class="text-[11px] text-emerald-700 font-bold text-center hidden">¡Copiado correctamente al portapapeles!</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: WHATSAPP RSVP FORM -->
-            <section id="rsvp" class="parchment-frame rounded-2xl p-5 sm:p-7">
-                <div class="text-center mb-5">
-                    <span class="font-cinzel text-[10px] tracking-widest text-[#C5A059] uppercase font-bold">Confirmación</span>
-                    <h3 class="font-cinzel text-xl sm:text-2xl text-[#0B1626] font-bold mt-0.5">Confirmar Asistencia</h3>
-                    <div class="gold-divider mt-2"></div>
-                </div>
-
-                <form id="rsvpForm" class="max-w-md mx-auto space-y-3.5">
-                    <div>
-                        <label for="fullName" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Nombre y Apellido *
-                        </label>
-                        <input type="text" id="fullName" required placeholder="Tu nombre completo" class="w-full px-3.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800 shadow-inner">
-                    </div>
-
-                    <div>
-                        <label for="email" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Correo Electrónico *
-                        </label>
-                        <input type="email" id="email" required placeholder="correo@ejemplo.com" class="w-full px-3.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800 shadow-inner">
-                    </div>
-
-                    <div>
-                        <label for="phone" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Teléfono de Contacto *
-                        </label>
-                        <div class="flex gap-2">
-                            <select id="countryCode" class="w-28 px-1.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs text-gray-800 shrink-0">
-                                <option value="+54">+54 (AR)</option>
-                                <option value="+353" selected>+353 (IE)</option>
-                                <option value="+34">+34 (ES)</option>
-                                <option value="+1">+1 (US)</option>
-                                <option value="+52">+52 (MX)</option>
-                                <option value="+56">+56 (CL)</option>
-                                <option value="+598">+598 (UY)</option>
-                            </select>
-                            <input type="tel" id="phone" required placeholder="11 1234 5678" class="flex-1 min-w-0 px-3.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800 shadow-inner">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            ¿Asistirás? *
-                        </label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="cursor-pointer border border-[#C5A059]/50 rounded-lg p-2.5 bg-white flex items-center justify-center gap-2 transition-colors min-h-[44px]">
-                                <input type="radio" name="attendance" value="Sí, confirmo asistencia" checked class="accent-[#0B1626] w-4 h-4">
-                                <span class="font-sans-clean text-xs font-semibold text-gray-800">Sí, asistiré</span>
-                            </label>
-                            <label class="cursor-pointer border border-[#C5A059]/50 rounded-lg p-2.5 bg-white flex items-center justify-center gap-2 transition-colors min-h-[44px]">
-                                <input type="radio" name="attendance" value="No podré asistir" class="accent-[#0B1626] w-4 h-4">
-                                <span class="font-sans-clean text-xs font-semibold text-gray-800">No podré ir</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="guests" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Cantidad de Acompañantes
-                        </label>
-                        <select id="guests" class="w-full px-3.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800">
-                            <option value="0 (Iré solo/a)">0 (Solo yo)</option>
-                            <option value="1 acompañante">1 acompañante</option>
-                            <option value="2 acompañantes">2 acompañantes</option>
-                            <option value="3 o más acompañantes">3 o más acompañantes</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="dietary" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Restricciones Alimentarias
-                        </label>
-                        <select id="dietary" class="w-full px-3.5 py-3 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800">
-                            <option value="Ninguna">Ninguna</option>
-                            <option value="Celíaco / TACC">Celíaco / TACC</option>
-                            <option value="Vegetariano">Vegetariano</option>
-                            <option value="Vegano">Vegano</option>
-                            <option value="Otras restricciones">Otras restricciones</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="note" class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider mb-1">
-                            Nota o Mensaje para los novios
-                        </label>
-                        <textarea id="note" rows="2" placeholder="Escribe tu nota aquí..." class="w-full px-3.5 py-2.5 rounded-lg bg-white border border-[#C5A059]/50 focus:outline-none focus:ring-2 focus:ring-[#0B1626] font-sans-clean text-xs sm:text-sm text-gray-800 shadow-inner resize-none"></textarea>
-                    </div>
-
-                    <!-- Voice Recorder Container -->
-                    <div class="p-3 bg-slate-900/5 rounded-xl border border-[#C5A059]/40 space-y-2">
-                        <label class="block font-sans-clean text-[11px] font-bold text-[#0B1626] uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="fa-solid fa-microphone text-[#0B1626]"></i>
-                            <span>Grabar nota de voz (Opcional)</span>
-                        </label>
-
-                        <div class="flex items-center gap-2">
-                            <button type="button" id="recordBtn" class="bg-[#0B1626] text-amber-100 px-3 py-2 rounded-lg text-xs font-sans-clean font-semibold flex items-center gap-1.5 active:scale-95 transition-transform min-h-[40px]">
-                                <i class="fa-solid fa-circle text-amber-400 text-[10px]"></i>
-                                <span id="recordBtnText">Grabar Audio</span>
-                            </button>
-
-                            <button type="button" id="playAudioBtn" disabled class="bg-gray-200 text-gray-400 px-3 py-2 rounded-lg text-xs font-sans-clean font-semibold flex items-center gap-1.5 transition-colors cursor-not-allowed min-h-[40px]">
-                                <i class="fa-solid fa-play"></i>
-                                <span>Escuchar</span>
-                            </button>
-
-                            <span id="recordingTimer" class="font-sans-clean text-xs font-bold text-[#0B1626] hidden ml-auto">00:00</span>
-                        </div>
-
-                        <audio id="audioPreview" class="w-full mt-1 hidden" controls></audio>
-                    </div>
-
-                    <!-- WhatsApp Review Warning -->
-                    <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 font-sans-clean text-[11px] flex items-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-emerald-600 text-sm shrink-0"></i>
-                        <span>Se abrirá WhatsApp para que puedas revisar y enviar tu mensaje.</span>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-700 active:bg-emerald-800 text-white font-cinzel text-xs sm:text-sm tracking-wider font-bold shadow-md transition-transform active:scale-[0.99] flex items-center justify-center gap-2 min-h-[48px]">
-                        <i class="fa-brands fa-whatsapp text-base"></i>
-                        <span>CONFIRMAR POR WHATSAPP</span>
-                    </button>
-                </form>
-            </section>
-
+        <div class="form-group">
+          <label for="guests">Cantidad de acompañantes</label>
+          <input type="number" id="guests" class="form-control" min="0" max="10" value="0">
         </div>
 
-    </main>
+        <div class="form-group">
+          <label>Teléfono de Contacto *</label>
+          <div class="phone-row">
+            <select id="countryCode" class="form-control">
+              <option value="54">+54 (AR)</option>
+              <option value="353" selected>+353 (IE)</option>
+              <option value="1">+1 (US)</option>
+              <option value="34">+34 (ES)</option>
+              <option value="598">+598 (UY)</option>
+            </select>
+            <input type="tel" id="phoneNumber" class="form-control" required placeholder="1112345678">
+          </div>
+        </div>
 
-    <footer class="bg-[#0B1626] text-amber-200/80 py-5 px-4 text-center mt-6 border-t border-[#C5A059]/40">
-        <p class="font-cinzel text-xs tracking-widest text-amber-300 font-bold">YAZMIN & GONZALO</p>
-        <p class="font-sans-clean text-[10px]">4 de Septiembre de 2027 • Burzaco, Argentina</p>
-    </footer>
+        <div class="form-group">
+          <label for="dietary">Restricciones alimentarias / Notas</label>
+          <textarea id="dietary" class="form-control" rows="3" placeholder="Vegetariano, celíaco, alergias..."></textarea>
+        </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        <!-- Voice Message Option -->
+        <div class="form-group">
+          <label>Audio para los novios (Opcional)</label>
+          <div class="audio-recorder-box">
+            <button type="button" class="rec-btn" id="recordBtn" onclick="toggleRecording()">🎤 Grabar Audio</button>
+            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para iniciar grabación</p>
+            <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
+          </div>
+        </div>
 
-            // Clean Editable Target WhatsApp Number
-            const phoneNumber = "353892564030";
+        <button type="submit" class="btn-gothic">CONFIRMAR POR WHATSAPP</button>
+        <p class="notice-info">Se abrirá WhatsApp para que puedas revisar y enviar el mensaje final. Además, tu confirmación se registrará automáticamente.</p>
+      </form>
+    </section>
 
-            /* 1. ENVELOPE OPENING & WEB AUDIO CONTROLLER */
-            const envelopeContainer = document.getElementById('envelopeContainer');
-            const waxSeal = document.getElementById('waxSeal');
-            const openEnvelopeBtn = document.getElementById('openEnvelopeBtn');
-            const invitationContent = document.getElementById('invitationContent');
-            const musicToggleBtn = document.getElementById('musicToggleBtn');
-            const musicIcon = document.getElementById('musicIcon');
-            const equalizer = document.getElementById('equalizer');
+  </main>
 
-            let isEnvelopeOpen = false;
-            let audioCtx = null;
-            let isMusicPlaying = false;
-            let synthInterval = null;
+  <script>
+    /* ==========================================
+       CONFIGURATION VARIABLES
+       ========================================== */
+    const WHATSAPP_PHONE = "353892564030"; // Target Phone without + or spaces
+    
+    // Paste your deployed Google Apps Script Web App URL here
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_YOUR_DEPLOYMENT_ID/exec"; 
 
-            // Pure Web Audio Classical Synthesizer (Edwardian Lullaby Arpeggio)
-            function playMusicBoxMelody() {
-                try {
-                    if (!audioCtx) {
-                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    if (audioCtx.state === 'suspended') {
-                        audioCtx.resume().catch(() => {});
-                    }
+    /* ==========================================
+       ENVELOPE & AUDIO SYSTEM
+       ========================================== */
+    let audioCtx = null;
+    let isPlaying = false;
+    let soundInterval = null;
 
-                    const notes = [261.63, 329.63, 392.00, 523.25, 493.88, 392.00, 329.63, 293.66, 349.23, 440.00]; 
-                    let noteIdx = 0;
+    function openEnvelope() {
+      // 1. Hide Overlay
+      document.getElementById('envelopeOverlay').classList.add('opened');
+      
+      // 2. Reveal Main Invitation
+      document.getElementById('mainInvitation').classList.add('visible');
+      
+      // 3. Start Classical Audio Synthesizer
+      initAudio();
+      
+      // 4. Start Countdown
+      startCountdown();
+    }
 
-                    synthInterval = setInterval(() => {
-                        if (!isMusicPlaying || !audioCtx) return;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      playMusicBox();
+      isPlaying = true;
+      document.getElementById('audioText').textContent = "Pausar";
+    }
 
-                        try {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
+    function playNote(freq, duration, delay) {
+      setTimeout(() => {
+        if (!isPlaying || !audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+      }, delay);
+    }
 
-                            osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(notes[noteIdx % notes.length], audioCtx.currentTime);
+    function playMusicBox() {
+      const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C Major Arpeggio
+      let step = 0;
+      
+      if (soundInterval) clearInterval(soundInterval);
+      
+      soundInterval = setInterval(() => {
+        if (isPlaying) {
+          playNote(notes[step % notes.length], 1.2, 0);
+          step++;
+        }
+      }, 500);
+    }
 
-                            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+    function toggleAudio() {
+      if (!audioCtx) {
+        initAudio();
+        return;
+      }
+      if (isPlaying) {
+        isPlaying = false;
+        document.getElementById('audioText').textContent = "Música";
+      } else {
+        isPlaying = true;
+        audioCtx.resume();
+        document.getElementById('audioText').textContent = "Pausar";
+      }
+    }
 
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
+    /* ==========================================
+       COUNTDOWN TIMER
+       ========================================== */
+    function startCountdown() {
+      const targetDate = new Date('September 4, 2027 12:45:00').getTime();
 
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 1.0);
+      function update() {
+        const now = new Date().getTime();
+        const diff = targetDate - now;
 
-                            noteIdx++;
-                        } catch (err) {}
-                    }, 500);
-                } catch (e) {}
-            }
+        if (diff <= 0) return;
 
-            function toggleAudio() {
-                if (isMusicPlaying) {
-                    if (synthInterval) clearInterval(synthInterval);
-                    isMusicPlaying = false;
-                    musicIcon.className = 'fa-solid fa-play text-xs';
-                    equalizer.classList.add('hidden');
-                } else {
-                    isMusicPlaying = true;
-                    playMusicBoxMelody();
-                    musicIcon.className = 'fa-solid fa-pause text-xs';
-                    equalizer.classList.remove('hidden');
-                }
-            }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-            function triggerOpenEnvelope(e) {
-                if (e) e.stopPropagation();
-                if (isEnvelopeOpen) return;
-                isEnvelopeOpen = true;
+        document.getElementById('dias').textContent = String(d).padStart(2, '0');
+        document.getElementById('horas').textContent = String(h).padStart(2, '0');
+        document.getElementById('minutos').textContent = String(m).padStart(2, '0');
+        document.getElementById('segundos').textContent = String(s).padStart(2, '0');
+      }
 
-                // Animate envelope unfolding
-                envelopeContainer.classList.add('is-open');
+      update();
+      setInterval(update, 1000);
+    }
 
-                // Initialize audio safely inside tap event
-                toggleAudio();
+    /* ==========================================
+       EXTERNAL LINKS & UTILITIES
+       ========================================== */
+    function openMap() {
+      window.open('https://maps.google.com/?q=25+de+Mayo+1696,+Burzaco,+Buenos+Aires', '_blank');
+    }
 
-                // Reveal main invitation content
-                setTimeout(() => {
-                    invitationContent.classList.remove('hidden');
-                    setTimeout(() => {
-                        invitationContent.classList.remove('opacity-0');
-                        invitationContent.classList.add('opacity-100');
-                        invitationContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 50);
-                }, 500);
-            }
+    function addToCalendar() {
+      const gcalUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Yazmin+y+Gonzalo&dates=20270904T154500Z/20270904T210000Z&details=Nos+casamos!+Te+esperamos+en+Los+Cipreses+1.&location=25+de+Mayo+1696,+Burzaco";
+      window.open(gcalUrl, '_blank');
+    }
 
-            waxSeal.addEventListener('click', triggerOpenEnvelope);
-            openEnvelopeBtn.addEventListener('click', triggerOpenEnvelope);
-            envelopeContainer.addEventListener('click', triggerOpenEnvelope);
-            musicToggleBtn.addEventListener('click', toggleAudio);
+    function copyAlias() {
+      navigator.clipboard.writeText("YAZMIN.GONZALO.BODA");
+      alert("¡Alias copiado al portapapeles!");
+    }
 
+    /* ==========================================
+       VOICE RECORDING (OPTIONAL)
+       ========================================== */
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
-            /* 2. CALENDAR INTEGRATION (.ICS & GOOGLE) */
-            const downloadIcsBtn = document.getElementById('downloadIcsBtn');
-            const googleCalBtn = document.getElementById('googleCalBtn');
+    async function toggleRecording() {
+      const btn = document.getElementById('recordBtn');
+      const status = document.getElementById('recStatus');
 
-            const eventTitle = encodeURIComponent("Boda Yazmin y Gonzalo");
-            const eventDetails = encodeURIComponent("Save the Date - Boda Yazmin y Gonzalo en Los Cipreses 1, Burzaco.");
-            const eventLocation = encodeURIComponent("Los Cipreses 1, 25 de Mayo 1696, Min. Rivadavia, Burzaco");
-            
-            googleCalBtn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=20270904T124500Z/20270904T190000Z&details=${eventDetails}&location=${eventLocation}`;
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
 
-            downloadIcsBtn.addEventListener('click', () => {
-                const icsData = [
-                    'BEGIN:VCALENDAR',
-                    'VERSION:2.0',
-                    'BEGIN:VEVENT',
-                    'DTSTART:20270904T124500',
-                    'DTEND:20270904T200000',
-                    'SUMMARY:Boda Yazmin y Gonzalo',
-                    'DESCRIPTION:Save the Date - Boda Yazmin y Gonzalo',
-                    'LOCATION:25 de Mayo 1696, Min. Rivadavia, Burzaco, Argentina',
-                    'END:VEVENT',
-                    'END:VCALENDAR'
-                ].join('\r\n');
+          mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const preview = document.getElementById('audioPreview');
+            preview.src = audioUrl;
+            preview.style.display = 'block';
+          };
 
-                const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'Boda_Yazmin_y_Gonzalo.ics';
-                link.click();
-            });
+          mediaRecorder.start();
+          isRecording = true;
+          btn.textContent = "⏹ Detener Grabación";
+          status.textContent = "Grabando mensaje...";
+        } catch (err) {
+          alert("No se pudo acceder al micrófono.");
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        btn.textContent = "🎤 Regrabar Audio";
+        status.textContent = "Mensaje grabado con éxito";
+      }
+    }
 
+    /* ==========================================
+       RSVP FORM & WHATSAPP / GOOGLE SCRIPT DISPATCH
+       ========================================== */
+    function handleRSVP(event) {
+      event.preventDefault();
 
-            /* 3. LIVE COUNTDOWN TIMER */
-            const targetTime = new Date('September 4, 2027 12:45:00').getTime();
+      const name = document.getElementById('fullName').value.trim();
+      const attending = document.getElementById('attending').value;
+      const guests = document.getElementById('guests').value;
+      const countryCode = document.getElementById('countryCode').value;
+      const phone = document.getElementById('phoneNumber').value.trim();
+      const dietary = document.getElementById('dietary').value.trim();
 
-            function tickCountdown() {
-                const now = new Date().getTime();
-                const diff = targetTime - now;
+      if (!name || !phone) {
+        alert("Por favor completa los campos obligatorios.");
+        return;
+      }
 
-                if (diff <= 0) {
-                    document.getElementById('countdown').innerHTML = "<p class='font-cinzel text-sm text-slate-900 font-bold'>¡Hoy es el gran día!</p>";
-                    return;
-                }
+      // 1. Prepare Google Apps Script Payload (Async Post)
+      const payload = {
+        nombre: name,
+        asistencia: attending,
+        acompaniantes: guests,
+        telefono: `+${countryCode}${phone}`,
+        notas: dietary,
+        fechaRegistro: new Date().toISOString()
+      };
 
-                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-                document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-                document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-            }
-            setInterval(tickCountdown, 1000);
-            tickCountdown();
+      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(err => console.log("Google Script submission handled."));
+      }
 
+      // 2. Prepare WhatsApp Encoded Message
+      let message = `*CONFIRMACIÓN DE ASISTENCIA*\n\n`;
+      message += `*Nombre:* ${name}\n`;
+      message += `*¿Asiste?:* ${attending}\n`;
+      message += `*Acompañantes:* ${guests}\n`;
+      message += `*Teléfono:* +${countryCode} ${phone}\n`;
+      if (dietary) message += `*Restricciones / Notas:* ${dietary}\n`;
+      if (audioChunks.length > 0) message += `\n_(Mensaje de voz grabado en la invitación)_`;
 
-            /* 4. BANK CLIPBOARD COPY LOGIC */
-            const toggleBankDetailsBtn = document.getElementById('toggleBankDetailsBtn');
-            const bankDetailsBox = document.getElementById('bankDetailsBox');
-            const bankArrow = document.getElementById('bankArrow');
-            const copyAliasBtn = document.getElementById('copyAliasBtn');
-            const copyCbuBtn = document.getElementById('copyCbuBtn');
-            const copyFeedback = document.getElementById('copyFeedback');
+      const encodedText = encodeURIComponent(message);
+      const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedText}`;
 
-            toggleBankDetailsBtn.addEventListener('click', () => {
-                bankDetailsBox.classList.toggle('hidden');
-                bankArrow.classList.toggle('rotate-180');
-            });
-
-            function copyToClipboard(txt) {
-                const temp = document.createElement('textarea');
-                temp.value = txt;
-                document.body.appendChild(temp);
-                temp.select();
-                document.execCommand('copy');
-                document.body.removeChild(temp);
-
-                copyFeedback.classList.remove('hidden');
-                setTimeout(() => copyFeedback.classList.add('hidden'), 2500);
-            }
-
-            copyAliasBtn.addEventListener('click', () => copyToClipboard(document.getElementById('aliasText').innerText));
-            copyCbuBtn.addEventListener('click', () => copyToClipboard(document.getElementById('cbuText').innerText));
-
-
-            /* 5. AUDIO VOICE RECORDING SYSTEM */
-            const recordBtn = document.getElementById('recordBtn');
-            const recordBtnText = document.getElementById('recordBtnText');
-            const playAudioBtn = document.getElementById('playAudioBtn');
-            const audioPreview = document.getElementById('audioPreview');
-            const recordingTimer = document.getElementById('recordingTimer');
-
-            let mediaRecorder = null;
-            let audioChunks = [];
-            let isRecording = false;
-            let timerInterval = null;
-            let durationSec = 0;
-            let recordedVoice = false;
-
-            recordBtn.addEventListener('click', async () => {
-                if (!isRecording) {
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        mediaRecorder = new MediaRecorder(stream);
-                        audioChunks = [];
-
-                        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
-                        mediaRecorder.onstop = () => {
-                            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                            audioPreview.src = URL.createObjectURL(blob);
-                            audioPreview.classList.remove('hidden');
-                            playAudioBtn.disabled = false;
-                            playAudioBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
-                            playAudioBtn.classList.add('bg-[#0B1626]', 'text-amber-100', 'cursor-pointer');
-                            recordedVoice = true;
-                        };
-
-                        mediaRecorder.start();
-                        isRecording = true;
-                        recordBtn.classList.add('rec-pulse');
-                        recordBtnText.innerText = 'Detener';
-                        recordingTimer.classList.remove('hidden');
-
-                        durationSec = 0;
-                        timerInterval = setInterval(() => {
-                            durationSec++;
-                            const m = String(Math.floor(durationSec / 60)).padStart(2, '0');
-                            const s = String(durationSec % 60).padStart(2, '0');
-                            recordingTimer.innerText = `${m}:${s}`;
-                            if (durationSec >= 40) recordBtn.click();
-                        }, 1000);
-
-                    } catch (err) {
-                        alert('No se pudo acceder al micrófono en este navegador.');
-                    }
-                } else {
-                    if (mediaRecorder) mediaRecorder.stop();
-                    isRecording = false;
-                    clearInterval(timerInterval);
-                    recordBtn.classList.remove('rec-pulse');
-                    recordBtnText.innerText = 'Re-Grabar';
-                }
-            });
-
-            playAudioBtn.addEventListener('click', () => {
-                if (audioPreview.src) audioPreview.play();
-            });
-
-
-            /* 6. WHATSAPP ENCODED FORM SUBMISSION */
-            const rsvpForm = document.getElementById('rsvpForm');
-
-            rsvpForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const countryCode = document.getElementById('countryCode').value;
-                const phoneInput = document.getElementById('phone').value.trim();
-                const attendance = document.querySelector('input[name="attendance"]:checked').value;
-                const guests = document.getElementById('guests').value;
-                const dietary = document.getElementById('dietary').value;
-                const note = document.getElementById('note').value.trim();
-
-                if (!fullName || !email || !phoneInput) {
-                    alert('Por favor, completa los campos obligatorios (*).');
-                    return;
-                }
-
-                let text = `*CONFIRMACIÓN RSVP - BODA YAZMIN & GONZALO*\n\n`;
-                text += `👤 *Nombre:* ${fullName}\n`;
-                text += `📧 *Email:* ${email}\n`;
-                text += `📞 *Teléfono:* ${countryCode} ${phoneInput}\n`;
-                text += `✨ *Asistencia:* ${attendance}\n`;
-                text += `👥 *Acompañantes:* ${guests}\n`;
-                text += `🍽️ *Restricción Alimentaria:* ${dietary}\n`;
-
-                if (note) text += `📝 *Mensaje:* ${note}\n`;
-                if (recordedVoice) text += `🎙️ *(Nota de voz grabada en la web)*\n`;
-
-                const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
-                alert('Se abrirá WhatsApp para que puedas revisar y enviar tu mensaje.');
-                window.open(url, '_blank');
-            });
-        });
-    </script>
+      // 3. Launch WhatsApp
+      window.open(waUrl, '_blank');
+    }
+  </script>
 </body>
 </html>
