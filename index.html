@@ -103,14 +103,16 @@
       box-shadow: none;
     }
 
-    /* Sello de Cera con tu imagen waxseal.png de fondo */
+    /* Sello de Cera con waxseal.png de fondo y color de respaldo */
     .wax-seal-btn {
       position: absolute; top: 135px; left: 50%; transform: translateX(-50%);
+      background-color: #4a121a;
       background-image: url('waxseal.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      border: 2px solid var(--gold); color: var(--gold-light);
+      border: 2px solid var(--gold); 
+      color: var(--gold-light);
       width: 80px; height: 80px; border-radius: 50%; cursor: pointer;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), inset 0 3px 6px rgba(255, 255, 255, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.6);
@@ -208,9 +210,6 @@
       
       <!-- Sello de Cera con waxseal.png de fondo -->
       <button class="wax-seal-btn" onclick="openEnvelope()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E0C078" stroke-width="1.5" style="display:none;">
-          <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-        </svg>
         <span>ABRIR</span>
       </button>
     </div>
