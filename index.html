@@ -103,7 +103,7 @@
       box-shadow: none;
     }
 
-    /* Sello de Cera con waxseal.png transparente, más grande y texto visible */
+    /* Sello de Cera con waxseal.png transparente y centrado perfecto */
     .wax-seal-btn {
       position: absolute; top: 115px; left: 50%; transform: translateX(-50%);
       background-color: transparent;
@@ -115,20 +115,23 @@
       width: 110px; height: 110px; 
       border-radius: 50%; 
       cursor: pointer;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      display: flex; justify-content: center; align-items: center;
       filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.7));
       z-index: 20;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.5s ease;
     }
     .wax-seal-btn:hover { transform: translateX(-50%) scale(1.1); filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.85)) brightness(1.1); }
     .wax-seal-btn span { 
       font-family: var(--font-heading); 
-      font-size: 0.65rem; 
+      font-size: 0.7rem; 
       letter-spacing: 2px; 
       color: var(--gold-light); 
-      margin-top: 75px; 
       font-weight: bold; 
       text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      pointer-events: none;
+    }
+    .envelope-container.open .wax-seal-btn {
+      opacity: 0;
       pointer-events: none;
     }
 
@@ -140,7 +143,7 @@
       background-position: center;
       display: flex; flex-direction: column;
       justify-content: center; align-items: center; text-align: center; padding: 25px;
-      z-index: 1; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
       box-shadow: 0 15px 35px rgba(0,0,0,0.4);
       border-radius: 4px;
       pointer-events: none;
@@ -148,6 +151,10 @@
     .envelope-container.open .envelope-card-preview {
       transform: translateY(-55px);
       z-index: 3;
+    }
+    #envelopeOverlay.opened .envelope-container {
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
 
     /* Contenido Principal de la Invitación */
@@ -218,7 +225,7 @@
 
       <div class="envelope-pocket"></div>
       
-      <!-- Sello de Cera con waxseal.png transparente y texto ABRIR -->
+      <!-- Sello de Cera con waxseal.png transparente y texto centrado -->
       <button class="wax-seal-btn" onclick="openEnvelope()">
         <span>ABRIR</span>
       </button>
