@@ -184,10 +184,9 @@
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
     }
 
-    /* ESTILO PARA `tarjeta.png` TRANSPARENTE SIN DEFORMAR */
+    /* ESTILO BASE PARA TARJETAS CON FONDO PNG TRANSPARENTE */
     .lace-card-bg {
       background-color: transparent !important;
-      background-image: url('tarjeta.png') !important;
       background-size: contain !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
@@ -203,6 +202,16 @@
       padding: 18% 14% 16% 14%;
     }
     .lace-card-bg::after { display: none; }
+
+    /* TARJETA 1: PRESENTACIÓN (`tarjeta.png`) */
+    .lace-card-1 {
+      background-image: url('tarjeta.png') !important;
+    }
+
+    /* TARJETA 2: DIRECCIÓN Y UBICACIÓN (`tarjetados.png`) */
+    .lace-card-2 {
+      background-image: url('tarjetados.png') !important;
+    }
 
     .section-card::after {
       content: ''; position: absolute; inset: 8px;
@@ -325,8 +334,8 @@
   <!-- 2. ESCRITORIO DE POETA (PAPELES) -->
   <main id="mainInvitation">
     
-    <!-- Papel 1: PRESENTACIÓN & CONTADOR -->
-    <section class="section-card lace-card-bg" style="--rot: -1deg;">
+    <!-- Papel 1: PRESENTACIÓN & CONTADOR (`tarjeta.png`) -->
+    <section class="section-card lace-card-bg lace-card-1" style="--rot: -1deg;">
       <div class="header-names ink-text">Yazmin <span class="header-ampersand">&</span> Gonzalo</div>
       <p class="storybook-quote ink-text">
         "Y la amaba con un amor que era más que el amor..."<br>
@@ -342,8 +351,8 @@
       </div>
     </section>
 
-    <!-- Papel 2: UBICACIÓN & FECHA -->
-    <section class="section-card lace-card-bg" style="--rot: 1.5deg;">
+    <!-- Papel 2: UBICACIÓN & FECHA (`tarjetados.png`) -->
+    <section class="section-card lace-card-bg lace-card-2" style="--rot: 1.5deg;">
       <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 6px;" class="ink-text">UBICACIÓN & FECHA</h2>
       <p class="ink-text"><strong>Los Cipreses 1</strong></p>
       <p class="ink-text" style="font-size: 0.85rem; margin-bottom: 6px; line-height: 1.3;">
