@@ -1,4 +1,231 @@
-<script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yazmín & Gonzalo - Save the Date</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg-cream: #FAF6EE;
+      --midnight: #0B1626;
+      --midnight-light: #182B45;
+      --gold: #C5A059;
+      --gold-light: #E0C078;
+      --border-gold: rgba(197, 160, 89, 0.4);
+      --font-display: 'Cinzel Decorative', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-body: 'Cormorant Garamond', serif;
+    }
+    body {
+      background-color: var(--bg-cream);
+      color: var(--midnight);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    body.envelope-open { overflow-y: auto; }
+
+    #envelopeOverlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background-color: var(--midnight);
+      background-image: radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.9) 0%, rgba(11, 22, 38, 1) 80%);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 20px; transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+    }
+    #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; display: none !important; }
+
+    .old-envelope {
+      width: 100%; max-width: 380px;
+      background: #F4EEDD;
+      border: 2px solid var(--gold);
+      padding: 40px 20px 30px 20px;
+      border-radius: 4px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      position: relative;
+    }
+
+    .celestial-svg { width: 90px; height: 90px; margin: 15px auto 10px auto; display: block; }
+    .envelope-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--midnight); margin-bottom: 5px; }
+    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
+
+    .wax-seal-btn {
+      background: var(--midnight); border: 2px solid var(--gold); color: var(--gold-light);
+      width: 75px; height: 75px; border-radius: 50%; margin: 10px auto 0 auto; cursor: pointer;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.5);
+    }
+    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; }
+
+    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
+    #mainInvitation.visible { display: block; animation: fadeInContent 1s ease-out forwards; }
+    @keyframes fadeInContent { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-card {
+      background: #FFFFFF; border: 1px solid var(--border-gold);
+      padding: 30px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
+      box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+    }
+
+    .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
+    .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
+    .storybook-quote { font-style: italic; font-size: 1.15rem; color: var(--midnight-light); margin: 20px 0; }
+    .event-date-large { font-family: var(--font-heading); font-size: 1.4rem; color: var(--midnight); letter-spacing: 1px; margin-top: 15px; font-weight: 600; }
+    .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--gold); letter-spacing: 2px; }
+
+    .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+    .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; }
+    .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
+    .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+
+    .btn-gothic {
+      display: inline-block; background: var(--midnight); color: var(--gold-light);
+      border: 1px solid var(--gold); padding: 12px 24px; font-family: var(--font-heading);
+      font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+      cursor: pointer; margin-top: 15px; border-radius: 2px; width: 100%; max-width: 300px;
+    }
+    .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
+
+    .form-group { text-align: left; margin-bottom: 20px; }
+    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
+    .phone-row { display: flex; gap: 8px; }
+    .phone-row select { width: 110px; }
+    .guest-name-field { margin-top: 8px; }
+
+    .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
+    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
+    .rec-btn.recording { background: #334e68; color: #fff; }
+    .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
+    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div id="envelopeOverlay">
+    <div class="old-envelope">
+      <svg class="celestial-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#C5A059" stroke-width="1.5" />
+        <path d="M 50 10 A 40 40 0 0 1 50 90 A 25 25 0 0 0 50 10" fill="#0B1626" stroke="#C5A059" stroke-width="1" />
+        <circle cx="65" cy="40" r="3" fill="#C5A059" />
+        <path d="M 30 50 Q 40 35 50 50 Q 40 65 30 50" fill="#C5A059" />
+      </svg>
+      <div class="envelope-title">Yazmín & Gonzalo</div>
+      <div class="envelope-subtitle">Save the Date</div>
+      <button class="wax-seal-btn" onclick="openEnvelope()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E0C078" stroke-width="1.5">
+          <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <span>ABRIR</span>
+      </button>
+    </div>
+  </div>
+
+  <main id="mainInvitation">
+    <section class="section-card">
+      <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
+      <p class="storybook-quote">"Un capítulo eterno que comienza bajo el mismo cielo."</p>
+      <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
+      <div class="event-time">12:45 HS</div>
+      <div class="timer-grid">
+        <div class="timer-box"><span class="timer-num" id="dias">00</span><span class="timer-label">Días</span></div>
+        <div class="timer-box"><span class="timer-num" id="horas">00</span><span class="timer-label">Hs</span></div>
+        <div class="timer-box"><span class="timer-num" id="minutos">00</span><span class="timer-label">Min</span></div>
+        <div class="timer-box"><span class="timer-num" id="segundos">00</span><span class="timer-label">Seg</span></div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
+      <p><strong>Los Cipreses 1</strong></p>
+      <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
+      <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button><br>
+      <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
+    </section>
+
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
+      <form id="rsvpForm" onsubmit="handleRSVP(event)">
+        <div class="form-group">
+          <label for="fullName">Nombre y Apellido *</label>
+          <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmín Pérez">
+        </div>
+
+        <div class="form-group">
+          <label for="attending">¿Asistirás? *</label>
+          <select id="attending" class="form-control" required>
+            <option value="Sí">Sí, asistiré con gusto</option>
+            <option value="No">Lamentablemente no podré asistir</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="guests">Cantidad de acompañantes (Máx. 5)</label>
+          <select id="guests" class="form-control" onchange="updateGuestFields()">
+            <option value="0" selected>0 (Solo yo)</option>
+            <option value="1">1 Acompañante</option>
+            <option value="2">2 Acompañantes</option>
+            <option value="3">3 Acompañantes</option>
+            <option value="4">4 Acompañantes</option>
+            <option value="5">5 Acompañantes</option>
+          </select>
+          <div id="guestNamesContainer"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono de Contacto *</label>
+          <div class="phone-row">
+            <select id="countryCode" class="form-control">
+              <option value="54">+54 (AR)</option>
+              <option value="353" selected>+353 (IE)</option>
+              <option value="1">+1 (US)</option>
+              <option value="34">+34 (ES)</option>
+            </select>
+            <input type="tel" id="phoneNumber" class="form-control" required placeholder="1112345678">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dietary">Restricciones Alimentarias</label>
+          <input type="text" id="dietary" class="form-control" placeholder="Vegetariano, celíaco, alergias...">
+        </div>
+
+        <div class="form-group">
+          <label for="musicLink">Sugerencia de Música / Canción (Link)</label>
+          <input type="text" id="musicLink" class="form-control" placeholder="Ej: Nombre del tema o link">
+        </div>
+
+        <div class="form-group">
+          <label for="comments">Comentarios o Mensaje</label>
+          <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Audio para los novios (Máx. 120s)</label>
+          <div class="audio-recorder-box">
+            <button type="button" class="rec-btn" id="recordBtn" onclick="toggleRecording()">🎤 Grabar Audio</button>
+            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para iniciar grabación</p>
+            <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-gothic">CONFIRMAR & ENVIAR</button>
+        <div id="statusMessage"></div>
+        <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
+      </form>
+    </section>
+  </main>
+
+  <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
     const WHATSAPP_PHONE = "353892564030";
 
@@ -112,7 +339,6 @@
         audioFileName: audioBase64Data ? `audio_${name.replace(/\s+/g, '_')}.webm` : ""
       };
 
-      // 1. Envío a Google Sheets en segundo plano
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
@@ -121,10 +347,9 @@
           body: JSON.stringify(payload)
         });
       } catch (err) {
-        console.error("Error al guardar en Sheets:", err);
+        console.error("Error enviando a Google Sheets:", err);
       }
 
-      // 2. Construcción del mensaje de WhatsApp
       let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
       if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
       msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
@@ -132,8 +357,8 @@
       if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
       if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
 
-      // 3. Redirección inmediata (Incompatible con bloqueadores de ventanas emergentes)
-      const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-      window.location.href = waUrl;
+      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
     }
   </script>
+</body>
+</html>
