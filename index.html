@@ -213,6 +213,16 @@
       background-image: url('tarjetados.png') !important;
     }
 
+    /* TARJETA 3: DRESS CODE (`dresscode.jpg`) */
+    .dresscode-card-bg {
+      background-image: url('dresscode.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
     .section-card::after {
       content: ''; position: absolute; inset: 8px;
       border: 1px solid var(--border-gold); border-radius: 2px; pointer-events: none;
@@ -363,10 +373,10 @@
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
 
-    <!-- Papel 3: Dress Code -->
-    <section class="section-card" style="--rot: -0.8deg;">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">DRESS CODE</h2>
-      <p style="font-size: 1.2rem; font-family: var(--font-heading); color: var(--midnight-light); letter-spacing: 1px;">Elegante</p>
+    <!-- Papel 3: Dress Code (`dresscode.jpg`) -->
+    <section class="section-card dresscode-card-bg" style="--rot: -0.8deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;" class="ink-text">DRESS CODE</h2>
+      <p style="font-size: 1.2rem; font-family: var(--font-heading); color: var(--midnight-light); letter-spacing: 1px;" class="ink-text">Elegante</p>
     </section>
 
     <!-- Papel 4: Regalos / Buzón -->
