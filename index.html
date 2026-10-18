@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Yazmín & Gonzalo - Save the Date</title>
+  <title>Yazmin & Gonzalo - Save the Date</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +30,7 @@
       color: var(--midnight);
       font-family: var(--font-body);
       font-size: 18px;
-      line-height: 1.5;
+      line-height: 1.4;
       overflow-x: hidden;
       min-height: 100vh;
       padding-bottom: 60px;
@@ -195,14 +195,14 @@
       box-shadow: none !important;
       filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.7));
       width: 100%;
-      aspect-ratio: 5 / 7.2; /* Mantiene la proporción original de la tarjeta sin deformar */
+      aspect-ratio: 5 / 7.2;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 18% 14% 16% 14%; /* Ajusta el contenido estrictamente dentro del recuadro central */
+      padding: 18% 14% 16% 14%;
     }
-    .lace-card-bg::after { display: none; } /* Remueve bordes adicionales */
+    .lace-card-bg::after { display: none; }
 
     .section-card::after {
       content: ''; position: absolute; inset: 8px;
@@ -228,8 +228,8 @@
     }
 
     .header-names { font-family: var(--font-display); font-size: 1.6rem; color: var(--ink-black); line-height: 1.1; margin-bottom: 6px; }
-    .header-ampersand { font-family: var(--font-body); font-style: italic; color: #4a3828; display: block; font-size: 1.3rem; }
-    .storybook-quote { font-style: italic; font-size: 0.95rem; color: #2b211a; margin: 8px 0; line-height: 1.3; }
+    .header-ampersand { font-family: var(--font-body); font-style: italic; color: #4a3828; display: inline-block; font-size: 1.3rem; margin: 0 4px; }
+    .storybook-quote { font-style: italic; font-size: 0.9rem; color: #2b211a; margin: 8px 0; line-height: 1.35; }
     .event-date-large { font-family: var(--font-heading); font-size: 1.1rem; color: var(--ink-black); letter-spacing: 1px; margin-top: 8px; font-weight: 600; }
     .event-time { font-family: var(--font-heading); font-size: 0.85rem; color: #5a4533; letter-spacing: 2px; }
 
@@ -315,7 +315,7 @@
       <div class="envelope-flap"></div>
       <div class="envelope-card-preview">
         <p style="font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 2px; color: #4a121a; font-weight: bold; margin-bottom: 5px;">ESTÁS INVITADO A LA BODA DE</p>
-        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight);">Yazmín & Gonzalo</h3>
+        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight);">Yazmin & Gonzalo</h3>
       </div>
       <div class="envelope-pocket"></div>
       <button class="wax-seal-btn" onclick="openEnvelope()"><span>ABRIR</span></button>
@@ -325,10 +325,13 @@
   <!-- 2. ESCRITORIO DE POETA (PAPELES) -->
   <main id="mainInvitation">
     
-    <!-- Papel 1: PRESENTACIÓN & CONTADOR (Usa `tarjeta.png` sin deformar y transparente) -->
+    <!-- Papel 1: PRESENTACIÓN & CONTADOR -->
     <section class="section-card lace-card-bg" style="--rot: -1deg;">
-      <div class="header-names ink-text">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
-      <p class="storybook-quote ink-text">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.75rem; letter-spacing:1px; color:#4a3828;">— Edgar Allan Poe (Anabel Lee)</span></p>
+      <div class="header-names ink-text">Yazmin <span class="header-ampersand">&</span> Gonzalo</div>
+      <p class="storybook-quote ink-text">
+        "Y la amaba con un amor que era más que el amor..."<br>
+        <span style="font-size:0.75rem; letter-spacing:1px; color:#4a3828;">— Edgar Allan Poe (Anabel Lee)</span>
+      </p>
       <div class="event-date-large ink-text">4 DE SEPTIEMBRE DE 2027</div>
       <div class="event-time ink-text">12:45 HS</div>
       <div class="timer-grid">
@@ -339,11 +342,14 @@
       </div>
     </section>
 
-    <!-- Papel 2: UBICACIÓN & FECHA (Usa `tarjeta.png` sin deformar y transparente) -->
+    <!-- Papel 2: UBICACIÓN & FECHA -->
     <section class="section-card lace-card-bg" style="--rot: 1.5deg;">
       <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 6px;" class="ink-text">UBICACIÓN & FECHA</h2>
       <p class="ink-text"><strong>Los Cipreses 1</strong></p>
-      <p class="ink-text" style="font-size: 0.85rem; margin-bottom: 4px;">25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
+      <p class="ink-text" style="font-size: 0.85rem; margin-bottom: 6px; line-height: 1.3;">
+        25 de Mayo 1696, Min. Rivadavia,<br>
+        Alte. Brown, Burzaco, Argentina.
+      </p>
       <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button>
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
@@ -386,7 +392,7 @@
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
         <div class="form-group">
           <label for="fullName">Nombre y Apellido *</label>
-          <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmín Pérez">
+          <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmin Pérez">
         </div>
 
         <div class="form-group">
