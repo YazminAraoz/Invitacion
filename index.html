@@ -37,7 +37,7 @@
     /* Pantalla Inicial con fondo.png */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
-      background-image: linear-gradient(rgba(11, 22, 38, 0.75), rgba(11, 22, 38, 0.75)), url('fondo.png');
+      background-image: linear-gradient(rgba(11, 22, 38, 0.8), rgba(11, 22, 38, 0.9)), url('fondo.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -46,7 +46,7 @@
     }
     #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* Estructura del Sobre sin borde exterior */
+    /* Estructura del Sobre 3D con Sombras Realistas */
     .envelope-container {
       width: 100%; max-width: 420px; height: 340px;
       background-image: url('fondo.png');
@@ -54,20 +54,24 @@
       background-position: center;
       border: none;
       position: relative;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.85);
-      border-radius: 6px;
+      /* Sombras profundas en capas para dar relieve 3D */
+      box-shadow: 
+        0 35px 70px rgba(0, 0, 0, 0.75), 
+        0 15px 25px rgba(0, 0, 0, 0.5),
+        inset 0 0 40px rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
       overflow: visible;
     }
 
-    /* Sombra interna para dar profundidad al sobre */
+    /* Sombra de iluminación superior e interna para efecto tridimensional */
     .envelope-container::before {
       content: ''; position: absolute; inset: 0;
-      background: rgba(11, 22, 38, 0.25);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.35) 100%);
       pointer-events: none;
-      border-radius: 6px;
+      border-radius: 8px;
     }
 
-    /* Bolsillo Inferior del Sobre */
+    /* Bolsillo Inferior del Sobre con Sombra Proyectada */
     .envelope-pocket {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 210px;
       background-image: url('fondo.png');
@@ -75,11 +79,12 @@
       background-position: bottom;
       border-top: none;
       z-index: 2;
-      border-radius: 0 0 6px 6px;
-      filter: brightness(0.9);
+      border-radius: 0 0 8px 8px;
+      box-shadow: inset 0 15px 15px -10px rgba(0, 0, 0, 0.6);
+      filter: brightness(0.85);
     }
 
-    /* Solapa Superior del Sobre sin borde */
+    /* Solapa Superior del Sobre con Sombra de Elevación */
     .envelope-flap {
       position: absolute; top: 0; left: 0; width: 100%; height: 160px;
       background-image: url('fondo.png');
@@ -90,33 +95,36 @@
       transform-origin: top;
       transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 4;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
       filter: brightness(0.95);
     }
     .envelope-container.open .envelope-flap {
       transform: rotateX(180deg);
       z-index: 0;
+      box-shadow: none;
     }
 
-    /* Sello de Cera con Botón de Apertura */
+    /* Sello de Cera con Relieve 3D y Sombra Realista */
     .wax-seal-btn {
       position: absolute; top: 135px; left: 50%; transform: translateX(-50%);
-      background: #4a121a; border: 2px solid var(--gold); color: var(--gold-light);
+      background: radial-gradient(circle at 35% 35%, #6a1a24 0%, #4a121a 60%, #2a080c 100%);
+      border: 2px solid var(--gold); color: var(--gold-light);
       width: 80px; height: 80px; border-radius: 50%; cursor: pointer;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255,255,255,0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), inset 0 3px 6px rgba(255, 255, 255, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.6);
       z-index: 5;
-      transition: transform 0.3s ease, background 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
     }
-    .wax-seal-btn:hover { transform: translateX(-50%) scale(1.1); background: #5a1721; }
-    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; font-weight: bold; }
+    .wax-seal-btn:hover { transform: translateX(-50%) scale(1.12); filter: brightness(1.15); }
+    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
-    /* Tarjeta interior oculta dentro del sobre */
+    /* Tarjeta interior oculta dentro del sobre con sombra flotante */
     .envelope-card-preview {
       position: absolute; inset: 15px; background: #FAF6EE;
       border: 1px solid var(--border-gold); display: flex; flex-direction: column;
       justify-content: center; align-items: center; text-align: center; padding: 20px;
       z-index: 1; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
     .envelope-container.open .envelope-card-preview {
       transform: translateY(-55px);
@@ -178,13 +186,13 @@
 </head>
 <body>
 
-  <!-- Pantalla Inicial con fondo.png -->
+  <!-- Pantalla Inicial con fondo.png y sombras 3D -->
   <div id="envelopeOverlay">
     <div class="envelope-container" id="envelopeBox">
       <div class="envelope-flap"></div>
       <div class="envelope-pocket"></div>
       
-      <!-- Sello de Cera con Botón de Apertura -->
+      <!-- Sello de Cera 3D con Botón de Apertura -->
       <button class="wax-seal-btn" onclick="openEnvelope()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E0C078" stroke-width="1.5">
           <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
