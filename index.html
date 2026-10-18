@@ -105,6 +105,7 @@
     .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
     .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
     .rec-btn.recording { background: #334e68; color: #fff; }
+    .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
     #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
   </style>
 </head>
@@ -168,11 +169,14 @@
         </div>
 
         <div class="form-group">
-          <label for="guests">Cantidad de acompañantes</label>
+          <label for="guests">Cantidad de acompañantes (Máx. 5)</label>
           <select id="guests" class="form-control" onchange="updateGuestFields()">
             <option value="0" selected>0 (Solo yo)</option>
             <option value="1">1 Acompañante</option>
             <option value="2">2 Acompañantes</option>
+            <option value="3">3 Acompañantes</option>
+            <option value="4">4 Acompañantes</option>
+            <option value="5">5 Acompañantes</option>
           </select>
           <div id="guestNamesContainer"></div>
         </div>
@@ -181,8 +185,10 @@
           <label>Teléfono de Contacto *</label>
           <div class="phone-row">
             <select id="countryCode" class="form-control">
-              <option value="54" selected>+54 (AR)</option>
-              <option value="353">+353 (IE)</option>
+              <option value="54">+54 (AR)</option>
+              <option value="353" selected>+353 (IE)</option>
+              <option value="1">+1 (US)</option>
+              <option value="34">+34 (ES)</option>
             </select>
             <input type="tel" id="phoneNumber" class="form-control" required placeholder="1112345678">
           </div>
@@ -190,36 +196,38 @@
 
         <div class="form-group">
           <label for="dietary">Restricciones Alimentarias</label>
-          <input type="text" id="dietary" class="form-control" placeholder="Ninguna...">
+          <input type="text" id="dietary" class="form-control" placeholder="Vegetariano, celíaco, alergias...">
         </div>
 
         <div class="form-group">
-          <label for="musicLink">Sugerencia de Música / Canción</label>
-          <input type="text" id="musicLink" class="form-control" placeholder="Nombre del tema o link">
+          <label for="musicLink">Sugerencia de Música / Canción (Link)</label>
+          <input type="url" id="musicLink" class="form-control" placeholder="Ej: https://open.spotify.com/track/... o nombre del tema">
         </div>
 
         <div class="form-group">
           <label for="comments">Comentarios o Mensaje</label>
-          <textarea id="comments" class="form-control" rows="3" placeholder="Nota para los novios..."></textarea>
+          <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
         </div>
 
         <div class="form-group">
-          <label>Audio para los novios</label>
+          <label>Audio para los novios (Máx. 120s)</label>
           <div class="audio-recorder-box">
             <button type="button" class="rec-btn" id="recordBtn" onclick="toggleRecording()">🎤 Grabar Audio</button>
-            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para grabar</p>
+            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para iniciar grabación</p>
             <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
           </div>
         </div>
 
         <button type="submit" class="btn-gothic">CONFIRMAR & ENVIAR</button>
         <div id="statusMessage"></div>
+        <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
       </form>
     </section>
   </main>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g"; // Usar URL completa /exec de Apps Script si es necesario o ID si el entorno lo procesa
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
+    const WHATSAPP_PHONE = "353892564030";
 
     let mediaRecorder = null, audioChunks = [], audioBase64Data = null, audioFileExt = "webm", isRecording = false;
 
@@ -253,101 +261,3 @@
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'form-control guest-name-field';
-        input.placeholder = `Nombre Acompañante ${i}`;
-        input.required = true;
-        container.appendChild(input);
-      }
-    }
-
-    async function toggleRecording() {
-      const btn = document.getElementById('recordBtn');
-      const status = document.getElementById('recStatus');
-
-      if (!isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-          mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
-            reader.onloadend = () => { audioBase64Data = reader.result.split(',')[1]; };
-            document.getElementById('audioPreview').src = URL.createObjectURL(audioBlob);
-            document.getElementById('audioPreview').style.display = 'block';
-          };
-
-          mediaRecorder.start();
-          isRecording = true;
-          btn.textContent = "⏹ Detener";
-          btn.classList.add('recording');
-          status.textContent = "Grabando...";
-        } catch (err) {
-          alert("No se pudo acceder al micrófono.");
-        }
-      } else {
-        mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
-        isRecording = false;
-        btn.textContent = "🎤 Grabar Nuevamente";
-        btn.classList.remove('recording');
-        status.textContent = "¡Audio listo!";
-      }
-    }
-
-    async function handleRSVP(event) {
-      event.preventDefault();
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Enviando confirmación...";
-
-      const name = document.getElementById('fullName').value.trim();
-      const attending = document.getElementById('attending').value;
-      const guestsCount = parseInt(document.getElementById('guests').value, 10);
-      const phone = `+${document.getElementById('countryCode').value}${document.getElementById('phoneNumber').value.trim()}`;
-      const dietary = document.getElementById('dietary').value.trim() || "Ninguna";
-      const musicLink = document.getElementById('musicLink').value.trim() || "-";
-      const commentsInput = document.getElementById('comments').value.trim() || "-";
-
-      const guestInputs = document.querySelectorAll('.guest-name-field');
-      let guestNames = [];
-      guestInputs.forEach(input => { if (input.value.trim()) guestNames.push(input.value.trim()); });
-      const formattedGuestNames = guestNames.length > 0 ? guestNames.join(', ') : "-";
-
-      const now = new Date();
-      const payload = {
-        Fecha: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`,
-        Nombre: name,
-        Asistencia: attending,
-        Acompañantes: guestsCount,
-        NombresAcompanantes: formattedGuestNames,
-        Telefono: phone,
-        Restricciones: dietary,
-        Musica: musicLink,
-        Comentarios: commentsInput,
-        audioBase64: audioBase64Data || "",
-        audioFileName: audioBase64Data ? `audio_${name.replace(/\s+/g, '_')}.webm` : ""
-      };
-
-      // Nota: Reemplaza "https://script.google.com/macros/s/TU_DEPLOYMENT_ID/exec" con tu URL completa si la variable corta falla
-      const fullEndpoint = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
-
-      try {
-        await fetch(fullEndpoint, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        statusDiv.style.color = "green";
-        statusDiv.textContent = "¡Enviado con éxito!";
-      } catch (err) {
-        statusDiv.style.color = "red";
-        statusDiv.textContent = "Error de conexión.";
-      }
-    }
-  </script>
-</body>
-</html>
