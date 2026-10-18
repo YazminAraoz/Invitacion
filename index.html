@@ -14,11 +14,12 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
       --bg-cream: #FAF6EE;
+      --parchment: #F8F1E5;
       --midnight: #0B1626;
       --midnight-light: #182B45;
       --gold: #C5A059;
       --gold-light: #E0C078;
-      --border-gold: rgba(197, 160, 89, 0.4);
+      --border-gold: rgba(197, 160, 89, 0.6);
       --font-display: 'Cinzel Decorative', serif;
       --font-heading: 'Cinzel', serif;
       --font-body: 'Cormorant Garamond', serif;
@@ -112,7 +113,6 @@
       to { opacity: 1; transform: scale(1.04); }
     }
 
-
     /* ==========================================
        1. OVERLAY DEL SOBRE 3D
     ========================================== */
@@ -182,21 +182,58 @@
     }
     .envelope-container.open .wax-seal-btn { opacity: 0; pointer-events: none; }
 
-
     /* ==========================================
-       2. CONTENIDO PRINCIPAL INVITACIÓN
+       2. CONTENIDO PRINCIPAL Y TARJETAS ANTIGUAS
     ========================================== */
     #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
     #mainInvitation.visible { display: block; }
 
+    /* ESTILO DE TARJETA VICTORIANA VINTAGE */
     .section-card {
-      background: #FFFFFF; border: 1px solid var(--border-gold); padding: 30px 20px; margin-bottom: 35px;
-      border-radius: 4px; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
-      opacity: 0; transform: translateY(30px); transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: var(--parchment);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(224, 192, 120, 0.1) 100%);
+      border: 1px solid var(--border-gold);
+      padding: 35px 25px; 
+      margin-bottom: 40px; 
+      border-radius: 6px; 
+      text-align: center; 
+      position: relative;
+      box-shadow: 
+        0 10px 30px rgba(11, 22, 38, 0.12),
+        0 1px 3px rgba(0,0,0,0.08),
+        inset 0 0 20px rgba(197, 160, 89, 0.15);
+      opacity: 0; 
+      transform: translateY(40px) rotateX(10deg);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
     }
-    .section-card.reveal { animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-    .section-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(197, 160, 89, 0.15); }
+
+    /* Borde ornamental interior doble estilo imprenta antigua */
+    .section-card::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid var(--border-gold);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .section-card.reveal {
+      animation: vintageCardAppear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes vintageCardAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+      }
+    }
+
+    .section-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 
+        0 18px 40px rgba(11, 22, 38, 0.2),
+        inset 0 0 25px rgba(197, 160, 89, 0.25);
+    }
 
     .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
     .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
@@ -205,7 +242,14 @@
     .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--gold); letter-spacing: 2px; }
 
     .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-    .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; }
+    .timer-box { 
+      background: rgba(250, 246, 238, 0.8); 
+      border: 1px solid var(--border-gold); 
+      padding: 10px 12px; 
+      min-width: 65px; 
+      border-radius: 4px; 
+      box-shadow: inset 0 0 8px rgba(197, 160, 89, 0.2);
+    }
     .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
     .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
 
@@ -214,20 +258,39 @@
       border: 1px solid var(--gold); padding: 12px 24px; font-family: var(--font-heading);
       font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
       cursor: pointer; margin-top: 15px; border-radius: 2px; width: 100%; max-width: 300px;
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); }
+    .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
 
-    .form-group { text-align: left; margin-bottom: 20px; }
+    /* ESTILO DE CAMPOS DEL FORMULARIO ANTIGUO */
+    .form-group { text-align: left; margin-bottom: 22px; position: relative; z-index: 2; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
+    .form-control { 
+      width: 100%; 
+      padding: 10px 12px; 
+      border: 1px solid var(--border-gold); 
+      background: rgba(250, 246, 238, 0.7); 
+      font-family: var(--font-body); 
+      font-size: 1.05rem; 
+      color: var(--midnight); 
+      border-radius: 3px; 
+      outline: none; 
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control:focus {
+      border-color: var(--midnight);
+      box-shadow: 0 0 8px rgba(197, 160, 89, 0.4);
+      background: #FAF6EE;
+    }
+
     .phone-row { display: flex; gap: 8px; }
     .phone-row select { width: 110px; }
     .guest-name-field { margin-top: 8px; animation: fadeInField 0.4s ease forwards; }
     @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
+    .audio-recorder-box { background: rgba(250, 246, 238, 0.7); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
     .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
     .rec-btn.recording { background: #8a1c1c; color: #fff; }
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
@@ -241,12 +304,12 @@
     <source src="ballroom.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- BOTÓN FLOTANTE PARA MUTEAR/DESMUTEAR MÚSICA -->
+  <!-- BOTÓN FLOTANTE MÚSICA -->
   <button class="music-control-btn" id="musicBtn" onclick="toggleMusic()" title="Silenciar / Reproducir Música">
     🎵
   </button>
 
-  <!-- 0. FENAQUISTISCOPIO A PANTALLA COMPLETA -->
+  <!-- 0. FENAQUISTISCOPIO -->
   <div id="phenakistiscopeOverlay" onclick="dismissPhenakistiscope()">
     <div class="phena-stage">
       <div class="phena-wheel" id="phenaWheel"></div>
@@ -274,9 +337,10 @@
     </div>
   </div>
 
-  <!-- 2. INVITACIÓN Y FORMULARIO -->
+  <!-- 2. INVITACIÓN Y FORMULARIO (TARJETAS VINTAGE) -->
   <main id="mainInvitation">
     
+    <!-- Tarjeta 1: Presentación -->
     <section class="section-card">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
       <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
@@ -290,6 +354,7 @@
       </div>
     </section>
 
+    <!-- Tarjeta 2: Ubicación -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
       <p><strong>Los Cipreses 1</strong></p>
@@ -298,6 +363,7 @@
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
 
+    <!-- Tarjeta 3: Formulario Estilo Pergamino -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
@@ -383,7 +449,7 @@
       if (audio.paused) {
         audio.play().then(() => {
           document.getElementById('musicBtn').textContent = '🎵';
-        }).catch(err => console.log("Autoplay bloqueado hasta interacción:", err));
+        }).catch(err => console.log("Autoplay bloqueado:", err));
       }
     }
 
@@ -399,18 +465,14 @@
       }
     }
 
-    // Transición del Fenaquistiscopio al Sobre e Inicio de Música
     function dismissPhenakistiscope() {
-      // Iniciar la música ballroom al primer toque
       playBackgroundMusic();
 
       const discOverlay = document.getElementById('phenakistiscopeOverlay');
       const wheel = document.getElementById('phenaWheel');
       
-      // Acelera la rueda dramáticamente
       wheel.style.animation = "spinPhenakistiscope 0.5s linear infinite";
       
-      // Zoom in y desvanecimiento
       setTimeout(() => {
         discOverlay.classList.add('zoom-out');
       }, 300);
@@ -425,18 +487,14 @@
       const overlay = document.getElementById('envelopeOverlay');
       const invitation = document.getElementById('mainInvitation');
       
-      // Re-asegurar reproducción de audio por si no inició previamente
       playBackgroundMusic();
 
-      // 1. Abre la solapa y eleva la tarjeta
       envelopeBox.classList.add('open');
       
-      // 2. A los 1.0s realiza el efecto Zoom-In hacia la tarjeta
       setTimeout(() => {
         overlay.classList.add('zoom-in');
       }, 1000);
 
-      // 3. A los 2.0s revela la invitación
       setTimeout(() => {
         overlay.classList.add('opened');
         invitation.classList.add('visible');
