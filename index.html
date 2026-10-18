@@ -8,13 +8,14 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
       --bg-cream: #FAF6EE;
-      --parchment: #F8F1E5;
+      --parchment: #F4EAD5;
+      --parchment-dark: #E8D8B8;
       --midnight: #0B1626;
       --midnight-light: #182B45;
       --gold: #C5A059;
@@ -23,9 +24,12 @@
       --font-display: 'Cinzel Decorative', serif;
       --font-heading: 'Cinzel', serif;
       --font-body: 'Cormorant Garamond', serif;
+      --font-vintage: 'Playfair Display', serif;
     }
+
     body {
-      background-color: var(--bg-cream);
+      /* Fondo Estilo Escritorio de Madera Oscura de Poeta */
+      background: radial-gradient(circle, #1a2636 0%, #080d14 100%), #0B1626;
       color: var(--midnight);
       font-family: var(--font-body);
       font-size: 18px;
@@ -40,12 +44,12 @@
     ========================================== */
     .music-control-btn {
       position: fixed; top: 20px; right: 20px; z-index: 3000;
-      background: rgba(11, 22, 38, 0.85);
+      background: rgba(11, 22, 38, 0.9);
       border: 1px solid var(--gold);
       color: var(--gold-light);
       width: 44px; height: 44px; border-radius: 50%;
       display: flex; justify-content: center; align-items: center;
-      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
       transition: transform 0.3s ease, background 0.3s ease;
     }
     .music-control-btn:hover { transform: scale(1.1); background: var(--midnight); }
@@ -183,56 +187,130 @@
     .envelope-container.open .wax-seal-btn { opacity: 0; pointer-events: none; }
 
     /* ==========================================
-       2. CONTENIDO PRINCIPAL Y TARJETAS ANTIGUAS
+       2. ESCRITORIO DEL POETA (PAPELES SOBRE LA MESA)
     ========================================== */
-    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
+    #mainInvitation { max-width: 720px; margin: 0 auto; padding: 50px 20px; display: none; }
     #mainInvitation.visible { display: block; }
 
-    /* ESTILO DE TARJETA VICTORIANA VINTAGE */
+    /* PAPELES MANUSCRITOS Y HOJAS EN EL ESCRITORIO */
     .section-card {
       background-color: var(--parchment);
-      background-image: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(224, 192, 120, 0.1) 100%);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(210, 180, 130, 0.25) 100%);
       border: 1px solid var(--border-gold);
       padding: 35px 25px; 
-      margin-bottom: 40px; 
-      border-radius: 6px; 
+      margin-bottom: 45px; 
+      border-radius: 4px; 
       text-align: center; 
       position: relative;
       box-shadow: 
-        0 10px 30px rgba(11, 22, 38, 0.12),
-        0 1px 3px rgba(0,0,0,0.08),
-        inset 0 0 20px rgba(197, 160, 89, 0.15);
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 2px 5px rgba(0, 0, 0, 0.3),
+        inset 0 0 25px rgba(180, 140, 80, 0.2);
       opacity: 0; 
-      transform: translateY(40px) rotateX(10deg);
-      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+      transform: translateY(40px) rotate(-1deg);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
 
-    /* Borde ornamental interior doble estilo imprenta antigua */
+    /* Leve inclinación intercalada para efecto de papeles desordenados en el escritorio */
+    .section-card:nth-child(even) {
+      transform: translateY(40px) rotate(1.2deg);
+    }
+
     .section-card::after {
       content: '';
       position: absolute;
       inset: 8px;
       border: 1px solid var(--border-gold);
-      border-radius: 4px;
+      border-radius: 2px;
       pointer-events: none;
     }
 
     .section-card.reveal {
-      animation: vintageCardAppear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: vintagePaperAppear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    @keyframes vintageCardAppear {
+    @keyframes vintagePaperAppear {
       to {
         opacity: 1;
-        transform: translateY(0) rotateX(0deg);
+        transform: translateY(0) rotate(var(--rotation, -0.5deg));
       }
     }
 
     .section-card:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 
-        0 18px 40px rgba(11, 22, 38, 0.2),
-        inset 0 0 25px rgba(197, 160, 89, 0.25);
+      transform: translateY(-6px) scale(1.01) rotate(0deg) !important;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      z-index: 10;
+    }
+
+    /* ESTILO REVISTA / GACETA ANTIGUA (CÓDIGO DE VESTIMENTA) */
+    .fashion-gazette-card {
+      background-color: #F2E6CF;
+      border: 2px double var(--midnight);
+      padding: 30px 20px;
+    }
+    .fashion-gazette-card::after {
+      border: 1px dashed var(--midnight);
+    }
+    .gazette-header {
+      font-family: var(--font-vintage);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 2px solid var(--midnight);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      color: var(--midnight);
+    }
+    .gazette-sub {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .dress-code-grid {
+      display: flex;
+      justify-content: space-around;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .dress-box {
+      border: 1px solid rgba(11, 22, 38, 0.3);
+      padding: 15px 10px;
+      background: rgba(255, 255, 255, 0.4);
+      flex: 1;
+      border-radius: 3px;
+    }
+    .dress-title {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--midnight);
+      margin-bottom: 5px;
+    }
+    .dress-desc {
+      font-size: 0.95rem;
+      color: var(--midnight-light);
+      font-style: italic;
+    }
+
+    /* ESTILO REGALOS / CBU (NOTA FORMAL A PLUMA) */
+    .gift-card-content {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+    }
+    .bank-details-box {
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px dashed var(--gold);
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 4px;
+      text-align: left;
+    }
+    .bank-details-box p {
+      margin-bottom: 6px;
+      font-size: 0.95rem;
     }
 
     .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
@@ -264,7 +342,7 @@
     .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
 
-    /* ESTILO DE CAMPOS DEL FORMULARIO ANTIGUO */
+    /* FORMULARIO */
     .form-group { text-align: left; margin-bottom: 22px; position: relative; z-index: 2; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
     .form-control { 
@@ -299,7 +377,7 @@
 </head>
 <body>
 
-  <!-- ELEMENTO DE AUDIO DE FONDO (Música Ballroom 1800) -->
+  <!-- MÚSICA DE FONDO -->
   <audio id="bgMusic" loop preload="auto">
     <source src="ballroom.mp3" type="audio/mpeg">
   </audio>
@@ -337,10 +415,10 @@
     </div>
   </div>
 
-  <!-- 2. INVITACIÓN Y FORMULARIO (TARJETAS VINTAGE) -->
+  <!-- 2. ESCRITORIO DEL POETA (CONTENIDO PRINCIPAL) -->
   <main id="mainInvitation">
     
-    <!-- Tarjeta 1: Presentación -->
+    <!-- Papel 1: Cita y Fecha -->
     <section class="section-card">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
       <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
@@ -354,7 +432,7 @@
       </div>
     </section>
 
-    <!-- Tarjeta 2: Ubicación -->
+    <!-- Papel 2: Ubicación -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
       <p><strong>Los Cipreses 1</strong></p>
@@ -363,7 +441,41 @@
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
 
-    <!-- Tarjeta 3: Formulario Estilo Pergamino -->
+    <!-- Papel 3: Código de Vestimenta (Estilo Revista Antigua / Gaceta de Moda) -->
+    <section class="section-card fashion-gazette-card">
+      <div class="gazette-header">Gazette de la Mode</div>
+      <div class="gazette-sub">DRESS CODE: ELEGANTE / EDUARDIANO - GÓTICO - STEAMPUNK</div>
+      <p style="font-style: italic; font-size: 1rem; color: var(--midnight-light);">
+        Los invitamos a vestir con elegancia sobria, detalles de época o toques eduardianos / góticos.
+      </p>
+
+      <div class="dress-code-grid">
+        <div class="dress-box">
+          <div class="dress-title">Damas</div>
+          <div class="dress-desc">Vestidos largos, corsés, encajes, tonalidades oscuras o borgoña.</div>
+        </div>
+        <div class="dress-box">
+          <div class="dress-title">Caballeros</div>
+          <div class="dress-desc">Trajes oscuros, chalecos, corbatines o detalles steampunk.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Papel 4: Regalos / Muestra de Afecto -->
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
+      <div class="gift-card-content">
+        <p>Tu presencia es nuestro mejor regalo. Sin embargo, si deseas hacernos una demostración de afecto para nuestro gran día:</p>
+        <div class="bank-details-box">
+          <p><strong>Banco:</strong> Mercado Pago / Banco</p>
+          <p><strong>CBU / CVU:</strong> 0000003100000000000000</p>
+          <p><strong>Alias:</strong> boda.yazmin.gonzalo</p>
+          <p><strong>Titular:</strong> Yazmín y Gonzalo</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Papel 5: Formulario de Confirmación -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
@@ -443,7 +555,6 @@
 
     let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
 
-    // LÓGICA DE MÚSICA DE FONDO
     function playBackgroundMusic() {
       const audio = document.getElementById('bgMusic');
       if (audio.paused) {
