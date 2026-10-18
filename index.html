@@ -34,7 +34,7 @@
     }
     body.envelope-open { overflow-y: auto; }
 
-    /* Overlay inicial */
+    /* Overlay inicial con soporte para Zoom In */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-image: linear-gradient(rgba(11, 22, 38, 0.8), rgba(11, 22, 38, 0.9)), url('fondo.png');
@@ -42,16 +42,21 @@
       background-position: center;
       background-repeat: no-repeat;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 20px; transition: opacity 0.8s ease, visibility 0.8s ease;
+      padding: 20px; 
+      transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #envelopeOverlay.zoom-in {
+      transform: scale(1.35); /* Efecto Zoom In */
     }
     #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* Contenedor del Sobre (Permite que la tarjeta sobresalga sin cortarse) */
+    /* Contenedor del Sobre */
     .envelope-container {
       width: 100%; max-width: 420px; height: 280px;
       position: relative;
       perspective: 1000px;
       margin-top: 50px;
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* Fondo posterior del sobre */
@@ -66,7 +71,7 @@
       z-index: 1;
     }
 
-    /* Tarjeta Interior (Completamente oculta adentro antes del clic) */
+    /* Tarjeta Interior */
     .envelope-card-preview {
       position: absolute; inset: 12px;
       background-image: url('letter.jpg');
@@ -83,7 +88,7 @@
       pointer-events: none;
     }
     .envelope-container.open .envelope-card-preview {
-      transform: translateY(-110px); /* Sube suavemente por encima del sobre */
+      transform: translateY(-110px);
       opacity: 1;
     }
 
@@ -338,10 +343,15 @@
       const overlay = document.getElementById('envelopeOverlay');
       const invitation = document.getElementById('mainInvitation');
       
-      // Abre la solapa y eleva la tarjeta
+      // 1. Abre la solapa y eleva la tarjeta
       envelopeBox.classList.add('open');
       
-      // Mantiene la tarjeta visible durante 2 segundos antes de revelar la invitación
+      // 2. A los 1.2s hace el efecto Zoom-In hacia la tarjeta que se asomó
+      setTimeout(() => {
+        overlay.classList.add('zoom-in');
+      }, 1000);
+
+      // 3. A los 2.0s se desvanece suavemente y muestra las tarjetas principales
       setTimeout(() => {
         overlay.classList.add('opened');
         invitation.classList.add('visible');
