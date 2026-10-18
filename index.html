@@ -135,7 +135,7 @@
       pointer-events: none;
     }
 
-    /* Tarjeta interior utilizando letter.jpg como fondo */
+    /* Tarjeta interior oculta al inicio dentro del sobre */
     .envelope-card-preview {
       position: absolute; inset: 15px; 
       background-image: url('letter.jpg');
@@ -143,13 +143,17 @@
       background-position: center;
       display: flex; flex-direction: column;
       justify-content: center; align-items: center; text-align: center; padding: 25px;
-      z-index: 1; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+      z-index: 1; 
+      transform: translateY(40px); /* Oculta hacia abajo dentro del bolsillo */
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
       box-shadow: 0 15px 35px rgba(0,0,0,0.4);
       border-radius: 4px;
       pointer-events: none;
     }
     .envelope-container.open .envelope-card-preview {
-      transform: translateY(-55px);
+      transform: translateY(-55px); /* Se asoma al abrirse */
+      opacity: 1;
       z-index: 3;
     }
     #envelopeOverlay.opened .envelope-container {
@@ -217,7 +221,7 @@
     <div class="envelope-container" id="envelopeBox">
       <div class="envelope-flap"></div>
       
-      <!-- Tarjeta interior con el fondo letter.jpg -->
+      <!-- Tarjeta interior oculta al inicio -->
       <div class="envelope-card-preview">
         <p style="font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 2px; color: #4a121a; font-weight: bold; margin-bottom: 5px;">ESTÁS INVITADO A LA BODA DE</p>
         <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight); text-shadow: 0 1px 1px rgba(255,255,255,0.6);">Yazmín & Gonzalo</h3>
@@ -345,7 +349,7 @@
       
       envelopeBox.classList.add('open');
       
-      // Espera exactamente 2 segundos con la tarjeta antes de mostrar el formulario
+      // Espera exactamente 2 segundos con la tarjeta asomada antes de mostrar el formulario completo
       setTimeout(() => {
         overlay.classList.add('opened');
         invitation.classList.add('visible');
@@ -386,104 +390,4 @@
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'form-control guest-name-field';
-        input.placeholder = `Nombre y Apellido Acompañante ${i}`;
-        input.required = true;
-        container.appendChild(input);
-      }
-    }
-
-    async function toggleRecording() {
-      const btn = document.getElementById('recordBtn');
-      const status = document.getElementById('recStatus');
-
-      if (!isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-          mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
-            reader.onloadend = () => { audioBase64Data = reader.result.split(',')[1]; };
-            document.getElementById('audioPreview').src = URL.createObjectURL(audioBlob);
-            document.getElementById('audioPreview').style.display = 'block';
-          };
-
-          mediaRecorder.start();
-          isRecording = true;
-          btn.textContent = "⏹ Detener Grabación";
-          btn.classList.add('recording');
-          status.textContent = "Grabando... (Hable ahora)";
-        } catch (err) {
-          alert("Error: No se pudo acceder al micrófono.");
-        }
-      } else {
-        mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
-        isRecording = false;
-        btn.textContent = "🎤 Grabar Nuevamente";
-        btn.classList.remove('recording');
-        status.textContent = "¡Audio grabado con éxito!";
-      }
-    }
-
-    async function handleRSVP(event) {
-      event.preventDefault();
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Enviando confirmación y abriendo WhatsApp...";
-
-      const name = document.getElementById('fullName').value.trim();
-      const attending = document.getElementById('attending').value;
-      const guestsCount = parseInt(document.getElementById('guests').value, 10);
-      const phone = `+${document.getElementById('countryCode').value}${document.getElementById('phoneNumber').value.trim()}`;
-      const dietary = document.getElementById('dietary').value.trim() || "Ninguna";
-      const musicLink = document.getElementById('musicLink').value.trim() || "-";
-      const commentsInput = document.getElementById('comments').value.trim() || "-";
-
-      const guestInputs = document.querySelectorAll('.guest-name-field');
-      let guestNames = [];
-      guestInputs.forEach(input => { if (input.value.trim()) guestNames.push(input.value.trim()); });
-      const formattedGuestNames = guestNames.length > 0 ? guestNames.join(', ') : "-";
-
-      const now = new Date();
-      const payload = {
-        Fecha: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`,
-        Nombre: name,
-        Asistencia: attending,
-        Acompañantes: guestsCount,
-        NombresAcompanantes: formattedGuestNames,
-        Telefono: phone,
-        Restricciones: dietary,
-        Musica: musicLink,
-        Comentarios: commentsInput,
-        audioBase64: audioBase64Data || "",
-        audioFileName: audioBase64Data ? `audio_${name.replace(/\s+/g, '_')}.webm` : ""
-      };
-
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        console.error("Error enviando a Google Sheets:", err);
-      }
-
-      let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
-      if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
-      msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
-      if (musicLink !== "-") msg += `\n*Música sugerida:* ${musicLink}`;
-      if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
-      if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
-
-      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-    }
-  </script>
-</body>
-</html>
+        input.placeholder =
