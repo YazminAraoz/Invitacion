@@ -8,14 +8,12 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
-      --bg-cream: #FAF6EE;
       --parchment: #F4EAD5;
-      --parchment-dark: #E8D8B8;
       --midnight: #0B1626;
       --midnight-light: #182B45;
       --gold: #C5A059;
@@ -24,11 +22,9 @@
       --font-display: 'Cinzel Decorative', serif;
       --font-heading: 'Cinzel', serif;
       --font-body: 'Cormorant Garamond', serif;
-      --font-vintage: 'Playfair Display', serif;
     }
 
     body {
-      /* Fondo Estilo Escritorio de Madera Oscura de Poeta */
       background: radial-gradient(circle, #1a2636 0%, #080d14 100%), #0B1626;
       color: var(--midnight);
       font-family: var(--font-body);
@@ -36,12 +32,11 @@
       line-height: 1.6;
       overflow-x: hidden;
       min-height: 100vh;
+      padding-bottom: 60px;
     }
     body.envelope-open { overflow-y: auto; }
 
-    /* ==========================================
-       CONTROL DE MÚSICA DE FONDO (FLOTANTE)
-    ========================================== */
+    /* MÚSICA FLOTANTE */
     .music-control-btn {
       position: fixed; top: 20px; right: 20px; z-index: 3000;
       background: rgba(11, 22, 38, 0.9);
@@ -54,9 +49,7 @@
     }
     .music-control-btn:hover { transform: scale(1.1); background: var(--midnight); }
 
-    /* ==========================================
-       0. FENAQUISTISCOPIO A PANTALLA COMPLETA
-    ========================================== */
+    /* 0. FENAQUISTISCOPIO */
     #phenakistiscopeOverlay {
       position: fixed; inset: 0; z-index: 2000;
       width: 100vw; height: 100vh;
@@ -65,13 +58,8 @@
       overflow: hidden; cursor: pointer;
       transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
     }
-    #phenakistiscopeOverlay.zoom-out {
-      transform: scale(2.5);
-      opacity: 0;
-    }
-    #phenakistiscopeOverlay.hidden {
-      opacity: 0; visibility: hidden; pointer-events: none;
-    }
+    #phenakistiscopeOverlay.zoom-out { transform: scale(2.5); opacity: 0; }
+    #phenakistiscopeOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
     .phena-stage {
       position: relative;
@@ -79,47 +67,28 @@
       height: min(95vw, 95vh);
       display: flex; justify-content: center; align-items: center;
     }
-
     .phena-wheel {
-      width: 100%; height: 100%;
-      border-radius: 50%;
+      width: 100%; height: 100%; border-radius: 50%;
       background-image: url('Fenaquistiscopio.png');
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
+      background-size: contain; background-position: center; background-repeat: no-repeat;
       animation: spinPhenakistiscope 6s linear infinite;
       filter: drop-shadow(0 0 25px rgba(0,0,0,0.9));
     }
-
     .phena-pin {
       position: absolute; width: 35px; height: 35px;
       background: radial-gradient(circle, #E0C078 20%, #C5A059 70%, #0B1626 100%);
-      border-radius: 50%; border: 2px solid #000000;
-      box-shadow: 0 0 10px rgba(0,0,0,0.9);
-      z-index: 5;
+      border-radius: 50%; border: 2px solid #000000; box-shadow: 0 0 10px rgba(0,0,0,0.9); z-index: 5;
     }
-
     .phena-caption {
       position: absolute; bottom: 25px;
-      font-family: var(--font-heading); font-size: 0.85rem;
-      letter-spacing: 3px; color: var(--gold-light); text-transform: uppercase;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
-      animation: pulseText 1.8s ease-in-out infinite alternate;
-      z-index: 10;
+      font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 3px;
+      color: var(--gold-light); text-transform: uppercase; text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      animation: pulseText 1.8s ease-in-out infinite alternate; z-index: 10;
     }
+    @keyframes spinPhenakistiscope { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulseText { from { opacity: 0.5; transform: scale(0.96); } to { opacity: 1; transform: scale(1.04); } }
 
-    @keyframes spinPhenakistiscope {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    @keyframes pulseText {
-      from { opacity: 0.5; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1.04); }
-    }
-
-    /* ==========================================
-       1. OVERLAY DEL SOBRE 3D
-    ========================================== */
+    /* 1. OVERLAY SOBRE 3D PRINCIPAL */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-image: linear-gradient(rgba(11, 22, 38, 0.8), rgba(11, 22, 38, 0.9)), url('fondo.png');
@@ -136,13 +105,11 @@
       position: relative; perspective: 1000px; margin-top: 50px;
       transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
-
     .envelope-back {
       position: absolute; inset: 0;
       background-image: url('fondo.png'); background-size: cover; background-position: center;
       border-radius: 8px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7); filter: brightness(0.7); z-index: 1;
     }
-
     .envelope-card-preview {
       position: absolute; inset: 12px;
       background-image: url('letter.jpg'); background-size: cover; background-position: center;
@@ -153,7 +120,6 @@
       pointer-events: none;
     }
     .envelope-container.open .envelope-card-preview { transform: translateY(-110px); opacity: 1; }
-
     .envelope-pocket {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 180px;
       background-image: url('fondo.png'); background-size: cover; background-position: bottom;
@@ -161,7 +127,6 @@
       filter: brightness(0.9); pointer-events: none;
       clip-path: polygon(0 0, 50% 35px, 100% 0, 100% 100%, 0 100%);
     }
-
     .envelope-flap {
       position: absolute; top: 0; left: 0; width: 100%; height: 150px;
       background-image: url('fondo.png'); background-size: cover; background-position: top;
@@ -186,133 +151,54 @@
     }
     .envelope-container.open .wax-seal-btn { opacity: 0; pointer-events: none; }
 
+
     /* ==========================================
-       2. ESCRITORIO DEL POETA (PAPELES SOBRE LA MESA)
+       2. ESCRITORIO DE POETA & PILA DE PAPELES
     ========================================== */
-    #mainInvitation { max-width: 720px; margin: 0 auto; padding: 50px 20px; display: none; }
+    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
     #mainInvitation.visible { display: block; }
 
-    /* PAPELES MANUSCRITOS Y HOJAS EN EL ESCRITORIO */
+    /* TARJETAS PAPELES PILADOS EN LA MESA */
     .section-card {
       background-color: var(--parchment);
-      background-image: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(210, 180, 130, 0.25) 100%);
+      background-image: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(210, 180, 130, 0.2) 100%);
       border: 1px solid var(--border-gold);
       padding: 35px 25px; 
-      margin-bottom: 45px; 
+      margin-bottom: 30px; 
       border-radius: 4px; 
       text-align: center; 
       position: relative;
-      box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        0 2px 5px rgba(0, 0, 0, 0.3),
-        inset 0 0 25px rgba(180, 140, 80, 0.2);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(180, 140, 80, 0.15);
       opacity: 0; 
-      transform: translateY(40px) rotate(-1deg);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      transform: translateY(30px) rotate(var(--rot, 0deg));
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
     }
-
-    /* Leve inclinación intercalada para efecto de papeles desordenados en el escritorio */
-    .section-card:nth-child(even) {
-      transform: translateY(40px) rotate(1.2deg);
-    }
-
     .section-card::after {
-      content: '';
-      position: absolute;
-      inset: 8px;
-      border: 1px solid var(--border-gold);
-      border-radius: 2px;
-      pointer-events: none;
+      content: ''; position: absolute; inset: 8px;
+      border: 1px solid var(--border-gold); border-radius: 2px; pointer-events: none;
     }
+    .section-card.reveal { animation: paperAppear 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes paperAppear { to { opacity: 1; transform: translateY(0) rotate(var(--rot, 0deg)); } }
 
-    .section-card.reveal {
-      animation: vintagePaperAppear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes vintagePaperAppear {
-      to {
-        opacity: 1;
-        transform: translateY(0) rotate(var(--rotation, -0.5deg));
-      }
-    }
-
+    /* Efecto al pasar el mouse (separación y elevación de papeles) */
     .section-card:hover {
-      transform: translateY(-6px) scale(1.01) rotate(0deg) !important;
+      transform: translateY(-8px) scale(1.01) rotate(0deg) !important;
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
       z-index: 10;
     }
 
-    /* ESTILO REVISTA / GACETA ANTIGUA (CÓDIGO DE VESTIMENTA) */
-    .fashion-gazette-card {
-      background-color: #F2E6CF;
-      border: 2px double var(--midnight);
-      padding: 30px 20px;
+    /* FORMULARIO: EFECTO HOJA DOBLADA QUE SE DESDOBLA */
+    .foldable-form-card {
+      transform-origin: top center;
+      transform: perspective(1000px) rotateX(12deg) translateY(20px);
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
     }
-    .fashion-gazette-card::after {
-      border: 1px dashed var(--midnight);
-    }
-    .gazette-header {
-      font-family: var(--font-vintage);
-      font-size: 1.5rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 2px solid var(--midnight);
-      padding-bottom: 8px;
-      margin-bottom: 15px;
-      color: var(--midnight);
-    }
-    .gazette-sub {
-      font-family: var(--font-heading);
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      color: var(--gold);
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-    .dress-code-grid {
-      display: flex;
-      justify-content: space-around;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .dress-box {
-      border: 1px solid rgba(11, 22, 38, 0.3);
-      padding: 15px 10px;
-      background: rgba(255, 255, 255, 0.4);
-      flex: 1;
-      border-radius: 3px;
-    }
-    .dress-title {
-      font-family: var(--font-heading);
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: var(--midnight);
-      margin-bottom: 5px;
-    }
-    .dress-desc {
-      font-size: 0.95rem;
-      color: var(--midnight-light);
-      font-style: italic;
+    .foldable-form-card:hover {
+      transform: perspective(1000px) rotateX(0deg) translateY(-5px) !important;
+      box-shadow: 0 22px 50px rgba(0,0,0,0.6);
     }
 
-    /* ESTILO REGALOS / CBU (NOTA FORMAL A PLUMA) */
-    .gift-card-content {
-      font-family: var(--font-body);
-      font-size: 1.1rem;
-    }
-    .bank-details-box {
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px dashed var(--gold);
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 4px;
-      text-align: left;
-    }
-    .bank-details-box p {
-      margin-bottom: 6px;
-      font-size: 0.95rem;
-    }
-
+    /* TIPOGRAFÍAS Y DISEÑO DE CONTENIDO */
     .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
     .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
     .storybook-quote { font-style: italic; font-size: 1.15rem; color: var(--midnight-light); margin: 20px 0; line-height: 1.5; padding: 0 15px; }
@@ -321,12 +207,8 @@
 
     .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
     .timer-box { 
-      background: rgba(250, 246, 238, 0.8); 
-      border: 1px solid var(--border-gold); 
-      padding: 10px 12px; 
-      min-width: 65px; 
-      border-radius: 4px; 
-      box-shadow: inset 0 0 8px rgba(197, 160, 89, 0.2);
+      background: rgba(250, 246, 238, 0.9); border: 1px solid var(--border-gold); 
+      padding: 10px 12px; min-width: 65px; border-radius: 4px; box-shadow: inset 0 0 8px rgba(197, 160, 89, 0.2);
     }
     .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
     .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
@@ -342,37 +224,44 @@
     .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
 
+    /* BOTÓN COPIAR CBU */
+    .btn-copy {
+      background: var(--gold); color: var(--midnight); border: 1px solid var(--midnight);
+      padding: 8px 16px; font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 1px;
+      text-transform: uppercase; cursor: pointer; border-radius: 2px; margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+    .btn-copy:hover { background: var(--gold-light); }
+
     /* FORMULARIO */
     .form-group { text-align: left; margin-bottom: 22px; position: relative; z-index: 2; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
     .form-control { 
-      width: 100%; 
-      padding: 10px 12px; 
-      border: 1px solid var(--border-gold); 
-      background: rgba(250, 246, 238, 0.7); 
-      font-family: var(--font-body); 
-      font-size: 1.05rem; 
-      color: var(--midnight); 
-      border-radius: 3px; 
-      outline: none; 
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); 
+      background: rgba(250, 246, 238, 0.8); font-family: var(--font-body); font-size: 1.05rem; 
+      color: var(--midnight); border-radius: 3px; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
-    .form-control:focus {
-      border-color: var(--midnight);
-      box-shadow: 0 0 8px rgba(197, 160, 89, 0.4);
-      background: #FAF6EE;
-    }
+    .form-control:focus { border-color: var(--midnight); box-shadow: 0 0 8px rgba(197, 160, 89, 0.4); background: #FAF6EE; }
 
     .phone-row { display: flex; gap: 8px; }
     .phone-row select { width: 110px; }
     .guest-name-field { margin-top: 8px; animation: fadeInField 0.4s ease forwards; }
     @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .audio-recorder-box { background: rgba(250, 246, 238, 0.7); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
+    .audio-recorder-box { background: rgba(250, 246, 238, 0.8); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
     .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
     .rec-btn.recording { background: #8a1c1c; color: #fff; }
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
     #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
+
+    /* MODAL DEL SOBRE DE CONFIRMACIÓN */
+    #rsvpEnvelopeModal {
+      position: fixed; inset: 0; z-index: 2500;
+      background: rgba(11, 22, 38, 0.85);
+      display: flex; justify-content: center; align-items: center; padding: 20px;
+      opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #rsvpEnvelopeModal.active { opacity: 1; visibility: visible; }
   </style>
 </head>
 <body>
@@ -382,10 +271,8 @@
     <source src="ballroom.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- BOTÓN FLOTANTE MÚSICA -->
-  <button class="music-control-btn" id="musicBtn" onclick="toggleMusic()" title="Silenciar / Reproducir Música">
-    🎵
-  </button>
+  <!-- BOTÓN MÚSICA -->
+  <button class="music-control-btn" id="musicBtn" onclick="toggleMusic()" title="Silenciar / Reproducir Música">🎵</button>
 
   <!-- 0. FENAQUISTISCOPIO -->
   <div id="phenakistiscopeOverlay" onclick="dismissPhenakistiscope()">
@@ -396,30 +283,25 @@
     <div class="phena-caption">Toca la pantalla para comenzar</div>
   </div>
 
-  <!-- 1. OVERLAY DEL SOBRE 3D -->
+  <!-- 1. OVERLAY SOBRE 3D INICIAL -->
   <div id="envelopeOverlay">
     <div class="envelope-container" id="envelopeBox">
       <div class="envelope-back"></div>
       <div class="envelope-flap"></div>
-      
       <div class="envelope-card-preview">
         <p style="font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 2px; color: #4a121a; font-weight: bold; margin-bottom: 5px;">ESTÁS INVITADO A LA BODA DE</p>
-        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight); text-shadow: 0 1px 1px rgba(255,255,255,0.6);">Yazmín & Gonzalo</h3>
+        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight);">Yazmín & Gonzalo</h3>
       </div>
-
       <div class="envelope-pocket"></div>
-      
-      <button class="wax-seal-btn" onclick="openEnvelope()">
-        <span>ABRIR</span>
-      </button>
+      <button class="wax-seal-btn" onclick="openEnvelope()"><span>ABRIR</span></button>
     </div>
   </div>
 
-  <!-- 2. ESCRITORIO DEL POETA (CONTENIDO PRINCIPAL) -->
+  <!-- 2. ESCRITORIO DE POETA (PAPELES) -->
   <main id="mainInvitation">
     
-    <!-- Papel 1: Cita y Fecha -->
-    <section class="section-card">
+    <!-- Papel 1 -->
+    <section class="section-card" style="--rot: -1deg;">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
       <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
       <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
@@ -433,7 +315,7 @@
     </section>
 
     <!-- Papel 2: Ubicación -->
-    <section class="section-card">
+    <section class="section-card" style="--rot: 1.5deg;">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
       <p><strong>Los Cipreses 1</strong></p>
       <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
@@ -441,43 +323,41 @@
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
 
-    <!-- Papel 3: Código de Vestimenta (Estilo Revista Antigua / Gaceta de Moda) -->
-    <section class="section-card fashion-gazette-card">
-      <div class="gazette-header">Gazette de la Mode</div>
-      <div class="gazette-sub">DRESS CODE: ELEGANTE / EDUARDIANO - GÓTICO - STEAMPUNK</div>
-      <p style="font-style: italic; font-size: 1rem; color: var(--midnight-light);">
-        Los invitamos a vestir con elegancia sobria, detalles de época o toques eduardianos / góticos.
-      </p>
-
-      <div class="dress-code-grid">
-        <div class="dress-box">
-          <div class="dress-title">Damas</div>
-          <div class="dress-desc">Vestidos largos, corsés, encajes, tonalidades oscuras o borgoña.</div>
-        </div>
-        <div class="dress-box">
-          <div class="dress-title">Caballeros</div>
-          <div class="dress-desc">Trajes oscuros, chalecos, corbatines o detalles steampunk.</div>
-        </div>
-      </div>
+    <!-- Papel 3: Dress Code -->
+    <section class="section-card" style="--rot: -0.8deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">DRESS CODE</h2>
+      <p style="font-size: 1.2rem; font-family: var(--font-heading); color: var(--midnight-light); letter-spacing: 1px;">Elegante</p>
     </section>
 
-    <!-- Papel 4: Regalos / Muestra de Afecto -->
-    <section class="section-card">
+    <!-- Papel 4: Regalos / Buzón -->
+    <section class="section-card" style="--rot: 1deg;">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
-      <div class="gift-card-content">
-        <p>Tu presencia es nuestro mejor regalo. Sin embargo, si deseas hacernos una demostración de afecto para nuestro gran día:</p>
-        <div class="bank-details-box">
-          <p><strong>Banco:</strong> Mercado Pago / Banco</p>
-          <p><strong>CBU / CVU:</strong> 0000003100000000000000</p>
-          <p><strong>Alias:</strong> boda.yazmin.gonzalo</p>
-          <p><strong>Titular:</strong> Yazmín y Gonzalo</p>
-        </div>
+      <p style="margin-bottom: 10px;">Debido a que no podemos llevarnos objetos pesados, el día del evento contaremos con un <strong>buzón físico para sobres</strong>.</p>
+      <p style="margin-bottom: 15px;">Si prefieres hacernos una atención de manera virtual:</p>
+      <div style="background: rgba(255,255,255,0.6); border: 1px dashed var(--gold); padding: 12px; border-radius: 4px; display:inline-block; width:100%; max-width:320px;">
+        <p style="font-size: 0.9rem;"><strong>CBU / CVU:</strong> <span id="cbuText">0000003100000000000000</span></p>
+        <p style="font-size: 0.9rem;"><strong>Alias:</strong> <span id="aliasText">boda.yazmin.gonzalo</span></p>
+        <button class="btn-copy" onclick="copyBankInfo()">📋 Copiar Datos Bancarios</button>
       </div>
     </section>
 
-    <!-- Papel 5: Formulario de Confirmación -->
-    <section class="section-card">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
+    <!-- Papel 5: Confirmación de Asistencia (Simula Hoja Doblada / Tarjeta con Botón de Sobre) -->
+    <section class="section-card foldable-form-card" style="--rot: -0.5deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
+      <p style="margin-bottom: 20px; font-style: italic;">Por favor, despliega el sobre oficial para registrar tu respuesta.</p>
+      <button class="btn-gothic" onclick="openRSVPEnvelope()">ABRIR SOBRE DE RSVP</button>
+    </section>
+
+  </main>
+
+  <!-- MODAL / SOBRE SECUNDARIO PARA EL FORMULARIO DE RSVP -->
+  <div id="rsvpEnvelopeModal">
+    <div class="section-card reveal" style="max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; margin:0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight);">FORMULARIO DE ASISTENCIA</h2>
+        <button onclick="closeRSVPEnvelope()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--midnight);">×</button>
+      </div>
+      
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
         <div class="form-group">
           <label for="fullName">Nombre y Apellido *</label>
@@ -546,8 +426,8 @@
         <div id="statusMessage"></div>
         <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
       </form>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
@@ -578,19 +458,11 @@
 
     function dismissPhenakistiscope() {
       playBackgroundMusic();
-
       const discOverlay = document.getElementById('phenakistiscopeOverlay');
       const wheel = document.getElementById('phenaWheel');
-      
       wheel.style.animation = "spinPhenakistiscope 0.5s linear infinite";
-      
-      setTimeout(() => {
-        discOverlay.classList.add('zoom-out');
-      }, 300);
-
-      setTimeout(() => {
-        discOverlay.classList.add('hidden');
-      }, 800);
+      setTimeout(() => { discOverlay.classList.add('zoom-out'); }, 300);
+      setTimeout(() => { discOverlay.classList.add('hidden'); }, 800);
     }
 
     function openEnvelope() {
@@ -599,12 +471,9 @@
       const invitation = document.getElementById('mainInvitation');
       
       playBackgroundMusic();
-
       envelopeBox.classList.add('open');
       
-      setTimeout(() => {
-        overlay.classList.add('zoom-in');
-      }, 1000);
+      setTimeout(() => { overlay.classList.add('zoom-in'); }, 1000);
 
       setTimeout(() => {
         overlay.classList.add('opened');
@@ -613,13 +482,28 @@
         
         const cards = document.querySelectorAll('.section-card');
         cards.forEach((card, index) => {
-          setTimeout(() => {
-            card.classList.add('reveal');
-          }, index * 250);
+          setTimeout(() => { card.classList.add('reveal'); }, index * 200);
         });
 
         startCountdown();
       }, 2000);
+    }
+
+    function openRSVPEnvelope() {
+      document.getElementById('rsvpEnvelopeModal').classList.add('active');
+    }
+
+    function closeRSVPEnvelope() {
+      document.getElementById('rsvpEnvelopeModal').classList.remove('active');
+    }
+
+    function copyBankInfo() {
+      const textToCopy = "CBU: 0000003100000000000000\nAlias: boda.yazmin.gonzalo";
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("¡Datos bancarios copiados al portapapeles!");
+      }).catch(err => {
+        console.error("Error al copiar", err);
+      });
     }
 
     function startCountdown() {
@@ -643,106 +527,4 @@
       container.innerHTML = '';
       for (let i = 1; i <= count; i++) {
         const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-control guest-name-field';
-        input.placeholder = `Nombre y Apellido Acompañante ${i}`;
-        input.required = true;
-        container.appendChild(input);
-      }
-    }
-
-    async function toggleRecording() {
-      const btn = document.getElementById('recordBtn');
-      const status = document.getElementById('recStatus');
-
-      if (!isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-          mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
-            reader.onloadend = () => { audioBase64Data = reader.result.split(',')[1]; };
-            document.getElementById('audioPreview').src = URL.createObjectURL(audioBlob);
-            document.getElementById('audioPreview').style.display = 'block';
-          };
-
-          mediaRecorder.start();
-          isRecording = true;
-          btn.textContent = "⏹ Detener Grabación";
-          btn.classList.add('recording');
-          status.textContent = "Grabando... (Hable ahora)";
-        } catch (err) {
-          alert("Error: No se pudo acceder al micrófono.");
-        }
-      } else {
-        mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
-        isRecording = false;
-        btn.textContent = "🎤 Grabar Nuevamente";
-        btn.classList.remove('recording');
-        status.textContent = "¡Audio grabado con éxito!";
-      }
-    }
-
-    async function handleRSVP(event) {
-      event.preventDefault();
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Enviando confirmación y abriendo WhatsApp...";
-
-      const name = document.getElementById('fullName').value.trim();
-      const attending = document.getElementById('attending').value;
-      const guestsCount = parseInt(document.getElementById('guests').value, 10);
-      const phone = `+${document.getElementById('countryCode').value}${document.getElementById('phoneNumber').value.trim()}`;
-      const dietary = document.getElementById('dietary').value.trim() || "Ninguna";
-      const musicLink = document.getElementById('musicLink').value.trim() || "-";
-      const commentsInput = document.getElementById('comments').value.trim() || "-";
-
-      const guestInputs = document.querySelectorAll('.guest-name-field');
-      let guestNames = [];
-      guestInputs.forEach(input => { if (input.value.trim()) guestNames.push(input.value.trim()); });
-      const formattedGuestNames = guestNames.length > 0 ? guestNames.join(', ') : "-";
-
-      const now = new Date();
-      const payload = {
-        Fecha: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`,
-        Nombre: name,
-        Asistencia: attending,
-        Acompañantes: guestsCount,
-        NombresAcompanantes: formattedGuestNames,
-        Telefono: phone,
-        Restricciones: dietary,
-        Musica: musicLink,
-        Comentarios: commentsInput,
-        audioBase64: audioBase64Data || "",
-        audioFileName: audioBase64Data ? `audio_${name.replace(/\s+/g, '_')}.webm` : ""
-      };
-
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        console.error("Error enviando a Google Sheets:", err);
-      }
-
-      let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
-      if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
-      msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
-      if (musicLink !== "-") msg += `\n*Música sugerida:* ${musicLink}`;
-      if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
-      if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
-
-      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-    }
-  </script>
-</body>
-</html>
+        input.type =
