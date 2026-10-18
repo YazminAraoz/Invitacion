@@ -35,6 +35,21 @@
     body.envelope-open { overflow-y: auto; }
 
     /* ==========================================
+       CONTROL DE MÚSICA DE FONDO (FLOTANTE)
+    ========================================== */
+    .music-control-btn {
+      position: fixed; top: 20px; right: 20px; z-index: 3000;
+      background: rgba(11, 22, 38, 0.85);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .music-control-btn:hover { transform: scale(1.1); background: var(--midnight); }
+
+    /* ==========================================
        0. FENAQUISTISCOPIO A PANTALLA COMPLETA
     ========================================== */
     #phenakistiscopeOverlay {
@@ -53,7 +68,6 @@
       opacity: 0; visibility: hidden; pointer-events: none;
     }
 
-    /* Vista Fenaquistiscopio Gigante */
     .phena-stage {
       position: relative;
       width: min(95vw, 95vh);
@@ -61,7 +75,6 @@
       display: flex; justify-content: center; align-items: center;
     }
 
-    /* Imagen del Fenaquistiscopio Nítida y Gigante */
     .phena-wheel {
       width: 100%; height: 100%;
       border-radius: 50%;
@@ -73,7 +86,6 @@
       filter: drop-shadow(0 0 25px rgba(0,0,0,0.9));
     }
 
-    /* Pin/Eje central minimalista */
     .phena-pin {
       position: absolute; width: 35px; height: 35px;
       background: radial-gradient(circle, #E0C078 20%, #C5A059 70%, #0B1626 100%);
@@ -224,6 +236,16 @@
 </head>
 <body>
 
+  <!-- ELEMENTO DE AUDIO DE FONDO (Música Ballroom 1800) -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="ballroom.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- BOTÓN FLOTANTE PARA MUTEAR/DESMUTEAR MÚSICA -->
+  <button class="music-control-btn" id="musicBtn" onclick="toggleMusic()" title="Silenciar / Reproducir Música">
+    🎵
+  </button>
+
   <!-- 0. FENAQUISTISCOPIO A PANTALLA COMPLETA -->
   <div id="phenakistiscopeOverlay" onclick="dismissPhenakistiscope()">
     <div class="phena-stage">
@@ -355,8 +377,33 @@
 
     let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
 
-    // Transición del Fenaquistiscopio al Sobre
+    // LÓGICA DE MÚSICA DE FONDO
+    function playBackgroundMusic() {
+      const audio = document.getElementById('bgMusic');
+      if (audio.paused) {
+        audio.play().then(() => {
+          document.getElementById('musicBtn').textContent = '🎵';
+        }).catch(err => console.log("Autoplay bloqueado hasta interacción:", err));
+      }
+    }
+
+    function toggleMusic() {
+      const audio = document.getElementById('bgMusic');
+      const btn = document.getElementById('musicBtn');
+      if (audio.paused) {
+        audio.play();
+        btn.textContent = '🎵';
+      } else {
+        audio.pause();
+        btn.textContent = '🔇';
+      }
+    }
+
+    // Transición del Fenaquistiscopio al Sobre e Inicio de Música
     function dismissPhenakistiscope() {
+      // Iniciar la música ballroom al primer toque
+      playBackgroundMusic();
+
       const discOverlay = document.getElementById('phenakistiscopeOverlay');
       const wheel = document.getElementById('phenaWheel');
       
@@ -378,6 +425,9 @@
       const overlay = document.getElementById('envelopeOverlay');
       const invitation = document.getElementById('mainInvitation');
       
+      // Re-asegurar reproducción de audio por si no inició previamente
+      playBackgroundMusic();
+
       // 1. Abre la solapa y eleva la tarjeta
       envelopeBox.classList.add('open');
       
