@@ -86,4 +86,52 @@
 
     .celestial-svg { width: 90px; height: 90px; margin: 15px auto 10px auto; display: block; position: relative; z-index: 5; }
     .envelope-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--midnight); margin-bottom: 5px; position: relative; z-index: 5; }
-    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; position:
+    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; position: relative; z-index: 5; }
+
+    .wax-seal-btn {
+      background: var(--midnight); border: 2px solid var(--gold); color: var(--gold-light);
+      width: 75px; height: 75px; border-radius: 50%; margin: 10px auto 0 auto; cursor: pointer;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.5); transition: transform 0.3s ease, background 0.3s ease;
+      position: relative; z-index: 15;
+    }
+    .wax-seal-btn:hover { transform: scale(1.08); background: var(--midnight-light); }
+    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; }
+
+    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
+    #mainInvitation.visible { display: block; animation: fadeInContent 1.2s ease-out forwards; }
+    @keyframes fadeInContent { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-card {
+      background: #FFFFFF; border: 1px solid var(--border-gold);
+      padding: 30px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
+      box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+    }
+    .section-card::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(197, 160, 89, 0.2); pointer-events: none; }
+
+    .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
+    .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
+    .storybook-quote { font-style: italic; font-size: 1.15rem; color: var(--midnight-light); margin: 20px 0; }
+    .event-date-large { font-family: var(--font-heading); font-size: 1.4rem; color: var(--midnight); letter-spacing: 1px; margin-top: 15px; font-weight: 600; }
+    .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--gold); letter-spacing: 2px; }
+
+    .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+    .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; }
+    .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
+    .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+
+    .btn-gothic {
+      display: inline-block; background: var(--midnight); color: var(--gold-light);
+      border: 1px solid var(--gold); padding: 12px 24px; font-family: var(--font-heading);
+      font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+      cursor: pointer; margin-top: 15px; border-radius: 2px; width: 100%; max-width: 300px;
+      transition: background 0.3s ease;
+    }
+    .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; }
+    .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
+    .btn-secondary:hover { background: var(--midnight); color: var(--gold); }
+
+    .form-group { text-align: left; margin-bottom: 20px; }
+    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
+    .phone-
