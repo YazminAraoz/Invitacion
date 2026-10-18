@@ -236,7 +236,7 @@
     }
     .image-card-contain::after { display: none; }
 
-    /* RUTA DE IMÁGENES ACTUALIZADA SEGÚN ESPECIFICACIÓN */
+    /* RUTA DE IMÁGENES SEGÚN ASIGNACIÓN */
     .lace-card-1 { background-image: url('tarjeta.png') !important; }
     .lace-card-2 { background-image: url('tarjetados.png') !important; }
     .dresscode-card-bg { background-image: url('dresscode2.jpg') !important; }
@@ -321,7 +321,7 @@
     }
     .btn-copy:hover { background: var(--gold-light); }
 
-    /* AJUSTES ADAPTATIVOS PARA SMARTPHONES (VERSIÓN MÓVIL PANTALLA CHICA) */
+    /* AJUSTES ADAPTATIVOS PARA SMARTPHONES */
     @media (max-width: 600px) {
       .image-card-contain {
         padding: 16% 12%;
@@ -370,7 +370,7 @@
     }
     #rsvpEnvelopeModal.active { opacity: 1; visibility: visible; }
 
-    /* ESTILOS PARA IMPRESIÓN/DESCARGA DEL PASE DIGITAL (PDF INVITACIÓN) */
+    /* ESTILOS PARA IMPRESIÓN/DESCARGA DEL PASE DIGITAL (PDF CON FONDO DRESSCODE2) */
     @media print {
       body * { visibility: hidden; }
       #printableTicket, #printableTicket * { visibility: visible; }
@@ -379,6 +379,8 @@
         display: flex !important; flex-direction: column; justify-content: center; align-items: center;
         background-image: url('dresscode2.jpg') !important; background-size: cover !important;
         background-position: center !important; color: #120E0C !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
     }
     #printableTicket {
@@ -431,7 +433,7 @@
 
     <div class="cards-slider-container" id="cardsSlider">
       
-      <!-- Papel 1: PRESENTACIÓN & CONTADOR (`tarjeta.png`) -->
+      <!-- Papel 1: PRESENTACIÓN & CONTADOR -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain lace-card-1">
           <div class="header-names ink-text">Yazmin <span class="header-ampersand">&</span> Gonzalo</div>
@@ -450,7 +452,7 @@
         </section>
       </div>
 
-      <!-- Papel 2: UBICACIÓN & FECHA (`tarjetados.png`) -->
+      <!-- Papel 2: UBICACIÓN & FECHA -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain lace-card-2">
           <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 4px;" class="ink-text card-title-mobile">UBICACIÓN & FECHA</h2>
@@ -461,7 +463,6 @@
           </p>
           <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button>
           <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
-          <button class="btn-gothic" style="background:#8a1c1c; border-color:#E0C078; margin-top:4px;" onclick="downloadPassPDF()">🎟 DESCARGAR PASE/PDF</button>
         </section>
       </div>
 
@@ -473,7 +474,7 @@
         </section>
       </div>
 
-      <!-- Papel 4: REGALOS / BUZÓN (`dresscode3.jpg`) -->
+      <!-- Papel 4: REGALOS (`dresscode3.jpg`) -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain gifts-card-bg">
           <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 4px;" class="ink-text card-title-mobile">REGALOS</h2>
@@ -588,7 +589,7 @@
     </div>
   </div>
 
-  <!-- PLANTILLA DE PASE DE INVITACIÓN / PDF IMPRIMIBLE -->
+  <!-- PLANTILLA DE PASE DE INVITACIÓN / PDF IMPRIMIBLE (FONDO DRESSCODE2) -->
   <div id="printableTicket">
     <h1 style="font-family: var(--font-display); font-size: 1.8rem; color: #120E0C; margin-bottom: 8px;">Yazmin & Gonzalo</h1>
     <p style="font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 2px; color: #4a121a; margin-bottom: 20px;">PASE OFICIAL DE INVITACIÓN</p>
@@ -695,10 +696,6 @@
       });
     }
 
-    function downloadPassPDF() {
-      window.print();
-    }
-
     function startCountdown() {
       const targetDate = new Date('September 4, 2027 12:45:00').getTime();
       setInterval(() => {
@@ -770,7 +767,7 @@
       event.preventDefault();
       const statusDiv = document.getElementById('statusMessage');
       statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Enviando confirmación y abriendo WhatsApp...";
+      statusDiv.textContent = "Registrando confirmación y generando pase...";
 
       const name = document.getElementById('fullName').value.trim();
       const attending = document.getElementById('attending').value;
@@ -811,6 +808,10 @@
         console.error("Error enviando a Google Sheets:", err);
       }
 
+      // 1. DESCARGAR / IMPRIMIR EL PASE AUTOMÁTICAMENTE
+      window.print();
+
+      // 2. ABRIR WHATSAPP CON LOS DATOS DE LOS NOVIOS
       let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
       if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
       msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
@@ -818,7 +819,9 @@
       if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
       if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
 
-      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+      setTimeout(() => {
+        window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+      }, 1000);
     }
   </script>
 </body>
