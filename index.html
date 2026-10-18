@@ -34,17 +34,19 @@
     }
     body.envelope-open { overflow-y: auto; }
 
-    /* Estética Steampunk / Victoriana para el Sobre */
+    /* Intro / Sobre Estetico Steampunk con Transiciones Suaves */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-color: var(--midnight);
       background-image: 
-        radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.9) 0%, rgba(11, 22, 38, 1) 80%),
-        repeating-linear-gradient(45deg, rgba(197, 160, 89, 0.03) 0, rgba(197, 160, 89, 0.03) 2px, transparent 0, transparent 4px);
+        radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.95) 0%, rgba(11, 22, 38, 1) 85%),
+        repeating-linear-gradient(45deg, rgba(197, 160, 89, 0.02) 0, rgba(197, 160, 89, 0.02) 2px, transparent 0, transparent 4px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 20px; transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+      padding: 20px; transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; display: none !important; }
+    #envelopeOverlay.opened {
+      opacity: 0; visibility: hidden; pointer-events: none;
+    }
 
     .old-envelope {
       width: 100%; max-width: 400px;
@@ -52,12 +54,17 @@
       border: 3px double var(--gold);
       padding: 45px 20px 35px 20px;
       border-radius: 6px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(197, 160, 89, 0.15);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), inset 0 0 35px rgba(197, 160, 89, 0.15);
       text-align: center;
       position: relative;
+      transform: scale(1);
+      transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s ease;
+    }
+    #envelopeOverlay.opened .old-envelope {
+      transform: scale(1.15) translateY(-30px);
+      opacity: 0;
     }
 
-    /* Patrón de Encaje Victoriano en los bordes */
     .old-envelope::before {
       content: '';
       position: absolute; inset: 6px;
@@ -66,12 +73,10 @@
     }
 
     .steampunk-gears {
-      font-size: 1.5rem;
-      color: var(--gold);
-      letter-spacing: 4px;
-      margin-bottom: 5px;
-      opacity: 0.85;
+      font-size: 1.5rem; color: var(--gold); letter-spacing: 4px; margin-bottom: 5px; opacity: 0.85;
+      animation: rotateGears 12s linear infinite;
     }
+    @keyframes rotateGears { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .celestial-svg { width: 85px; height: 85px; margin: 10px auto; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
     .envelope-title { font-family: var(--font-display); font-size: 1.6rem; color: var(--midnight); margin-bottom: 5px; letter-spacing: 1px; }
@@ -82,20 +87,26 @@
       width: 80px; height: 80px; border-radius: 50%; margin: 10px auto 0 auto; cursor: pointer;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 2px 5px rgba(255,255,255,0.2);
-      transition: transform 0.2s ease, background 0.2s ease;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease, box-shadow 0.3s ease;
     }
-    .wax-seal-btn:hover { transform: scale(1.06); background: #5a1721; }
+    .wax-seal-btn:hover { transform: scale(1.12); background: #5a1721; box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4); }
     .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; font-weight: bold; }
 
-    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
-    #mainInvitation.visible { display: block; animation: fadeInContent 1s ease-out forwards; }
-    @keyframes fadeInContent { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    /* Contenido Principal con Animaciones de Entrada */
+    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; opacity: 0; transform: translateY(30px); transition: opacity 1.2s ease, transform 1.2s ease; }
+    #mainInvitation.visible { display: block; opacity: 1; transform: translateY(0); }
 
     .section-card {
       background: #FFFFFF; border: 1px solid var(--border-gold);
       padding: 30px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
       box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    .section-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(197, 160, 89, 0.15);
+    }
+    .section-card::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(197, 160, 89, 0.2); pointer-events: none; }
 
     .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
     .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
@@ -104,7 +115,8 @@
     .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--gold); letter-spacing: 2px; }
 
     .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-    .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; }
+    .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; transition: transform 0.2s; }
+    .timer-box:hover { transform: scale(1.05); }
     .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
     .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
 
@@ -113,26 +125,39 @@
       border: 1px solid var(--gold); padding: 12px 24px; font-family: var(--font-heading);
       font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
       cursor: pointer; margin-top: 15px; border-radius: 2px; width: 100%; max-width: 300px;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(11,22,38,0.2); }
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
+    .btn-secondary:hover { background: var(--midnight); color: var(--gold); }
 
     .form-group { text-align: left; margin-bottom: 20px; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; transition: border-color 0.3s, background 0.3s; }
+    .form-control:focus { border-color: var(--midnight); background: #FFFFFF; box-shadow: 0 0 8px rgba(197, 160, 89, 0.3); }
+    
     .phone-row { display: flex; gap: 8px; }
     .phone-row select { width: 110px; }
-    .guest-name-field { margin-top: 8px; }
+    
+    .guest-name-field {
+      margin-top: 8px;
+      animation: fadeInField 0.4s ease forwards;
+    }
+    @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
     .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
-    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
-    .rec-btn.recording { background: #334e68; color: #fff; }
+    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); transition: all 0.3s; }
+    .rec-btn:hover { background: var(--midnight-light); transform: scale(1.05); }
+    .rec-btn.recording { background: #8a1c1c; color: #fff; animation: pulseRec 1.2s infinite; }
+    @keyframes pulseRec { 0% { box-shadow: 0 0 0 0 rgba(138, 28, 28, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(138, 28, 28, 0); } 100% { box-shadow: 0 0 0 0 rgba(138, 28, 28, 0); } }
+
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
-    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
+    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; transition: all 0.3s ease; }
   </style>
 </head>
 <body>
 
-  <!-- Sobre Estilo Steampunk con Encaje y Sello de Cera -->
+  <!-- Intro / Sobre Steampunk con animaciones de engranajes -->
   <div id="envelopeOverlay">
     <div class="old-envelope">
       <div class="steampunk-gears">⚙ ⚜ ⚙</div>
@@ -252,13 +277,19 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
     const WHATSAPP_PHONE = "353892564030";
 
-    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, audioFileExt = "webm", isRecording = false;
+    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
 
     function openEnvelope() {
-      document.getElementById('envelopeOverlay').classList.add('opened');
-      document.getElementById('mainInvitation').classList.add('visible');
-      document.body.classList.add('envelope-open');
-      startCountdown();
+      const overlay = document.getElementById('envelopeOverlay');
+      const invitation = document.getElementById('mainInvitation');
+      
+      overlay.classList.add('opened');
+      
+      setTimeout(() => {
+        invitation.classList.add('visible');
+        document.body.classList.add('envelope-open');
+        startCountdown();
+      }, 500);
     }
 
     function startCountdown() {
@@ -314,7 +345,7 @@
           isRecording = true;
           btn.textContent = "⏹ Detener Grabación";
           btn.classList.add('recording');
-          status.textContent = "Grabando...";
+          status.textContent = "Grabando... (Hable ahora)";
         } catch (err) {
           alert("Error: No se pudo acceder al micrófono.");
         }
