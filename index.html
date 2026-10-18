@@ -16,7 +16,7 @@
       --parchment: #F4EAD5;
       --midnight: #0B1626;
       --midnight-light: #182B45;
-      --ink-black: #120E0C; /* Tinta manuscrita sepia/azabache */
+      --ink-black: #120E0C;
       --gold: #C5A059;
       --gold-light: #E0C078;
       --border-gold: rgba(197, 160, 89, 0.6);
@@ -26,7 +26,6 @@
     }
 
     body {
-      /* FONDO GENERAL TOTALBG.JPG */
       background: radial-gradient(circle, rgba(11, 22, 38, 0.4) 0%, rgba(8, 13, 20, 0.8) 100%), url('totalbg.jpg') no-repeat center center fixed;
       background-size: cover;
       color: var(--midnight);
@@ -36,7 +35,7 @@
       overflow-x: hidden;
       min-height: 100vh;
     }
-    body.envelope-open { overflow-y: hidden; } /* Enfoque en carrusel horizontal */
+    body.envelope-open { overflow-y: hidden; }
 
     /* EFECTO DE TINTA MANUSCRITA */
     .ink-text {
@@ -180,7 +179,6 @@
       align-items: center;
     }
 
-    /* CONTENEDOR HORIZONTAL SCROLL */
     .cards-slider-container {
       display: flex;
       width: 100vw;
@@ -202,13 +200,13 @@
       justify-content: center;
       align-items: center;
       scroll-snap-align: center;
-      padding: 0 15px;
+      padding: 0 10px;
     }
 
     .section-card {
       background-color: var(--parchment);
       border: 1px solid var(--border-gold);
-      padding: 25px 20px; 
+      padding: 20px 15px; 
       border-radius: 4px; 
       text-align: center; 
       position: relative;
@@ -218,7 +216,7 @@
       width: 100%;
     }
 
-    /* ESTILO BASE PARA TARJETAS CON MARCO COMPLETO Y MÁS AMPLIAS */
+    /* ESTILO BASE CON IMAGEN DE FONDO COMPLETA */
     .image-card-contain {
       background-color: transparent !important;
       background-size: contain !important;
@@ -228,23 +226,24 @@
       box-shadow: none !important;
       filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8));
       width: 100%;
-      max-width: 540px;
-      aspect-ratio: 5 / 6.8;
+      max-width: 520px;
+      aspect-ratio: 5 / 7;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 12% 8%;
+      padding: 14% 10%;
     }
     .image-card-contain::after { display: none; }
 
-    /* ESPECIFICACIONES DE IMAGEN POR TARJETA */
+    /* RUTA DE IMÁGENES ACTUALIZADA SEGÚN ESPECIFICACIÓN */
     .lace-card-1 { background-image: url('tarjeta.png') !important; }
     .lace-card-2 { background-image: url('tarjetados.png') !important; }
     .dresscode-card-bg { background-image: url('dresscode2.jpg') !important; }
-    .rsvp-card-bg { background-image: url('dresscode3.jpg') !important; }
+    .gifts-card-bg { background-image: url('dresscode3.jpg') !important; }
+    .rsvp-card-bg { background-image: url('dresscode.jpg') !important; }
 
-    /* NAVEGACIÓN CONTROLES (FLECHAS Y PUNTOS) */
+    /* NAVEGACIÓN CONTROLES */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -254,8 +253,8 @@
       border: 1px solid var(--gold);
       color: var(--gold-light);
       font-size: 1.8rem;
-      width: 46px;
-      height: 46px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       display: flex;
       justify-content: center;
@@ -265,13 +264,13 @@
       user-select: none;
     }
     .nav-arrow:hover { background: var(--midnight); transform: translateY(-50%) scale(1.1); }
-    .nav-arrow.prev { left: 15px; }
-    .nav-arrow.next { right: 15px; }
+    .nav-arrow.prev { left: 10px; }
+    .nav-arrow.next { right: 10px; }
 
     .dots-indicator {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 5px;
       z-index: 100;
     }
     .dot {
@@ -289,66 +288,105 @@
       box-shadow: 0 0 8px var(--gold-light);
     }
 
-    .header-names { font-family: var(--font-display); font-size: 1.75rem; color: var(--ink-black); line-height: 1.1; margin-bottom: 6px; }
-    .header-ampersand { font-family: var(--font-body); font-style: italic; color: #4a3828; display: inline-block; font-size: 1.4rem; margin: 0 4px; }
-    .storybook-quote { font-style: italic; font-size: 0.95rem; color: #2b211a; margin: 8px 0; line-height: 1.35; }
-    .event-date-large { font-family: var(--font-heading); font-size: 1.15rem; color: var(--ink-black); letter-spacing: 1px; margin-top: 8px; font-weight: 600; }
-    .event-time { font-family: var(--font-heading); font-size: 0.9rem; color: #5a4533; letter-spacing: 2px; }
+    .header-names { font-family: var(--font-display); font-size: 1.6rem; color: var(--ink-black); line-height: 1.1; margin-bottom: 4px; }
+    .header-ampersand { font-family: var(--font-body); font-style: italic; color: #4a3828; display: inline-block; font-size: 1.3rem; margin: 0 4px; }
+    .storybook-quote { font-style: italic; font-size: 0.85rem; color: #2b211a; margin: 6px 0; line-height: 1.3; }
+    .event-date-large { font-family: var(--font-heading); font-size: 1.05rem; color: var(--ink-black); letter-spacing: 1px; margin-top: 6px; font-weight: 600; }
+    .event-time { font-family: var(--font-heading); font-size: 0.85rem; color: #5a4533; letter-spacing: 2px; }
 
-    .timer-grid { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+    .timer-grid { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
     .timer-box { 
       background: rgba(244, 234, 213, 0.85); border: 1px solid rgba(18, 14, 12, 0.3); 
-      padding: 4px 8px; min-width: 52px; border-radius: 3px; box-shadow: inset 0 0 4px rgba(18, 14, 12, 0.1);
+      padding: 3px 6px; min-width: 44px; border-radius: 3px; box-shadow: inset 0 0 4px rgba(18, 14, 12, 0.1);
     }
-    .timer-num { font-family: var(--font-heading); font-size: 1.05rem; color: var(--ink-black); font-weight: 700; display: block; }
-    .timer-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: #4a3828; }
+    .timer-num { font-family: var(--font-heading); font-size: 0.95rem; color: var(--ink-black); font-weight: 700; display: block; }
+    .timer-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; color: #4a3828; }
 
     .btn-gothic {
       display: inline-block; background: var(--midnight); color: var(--gold-light);
-      border: 1px solid var(--gold); padding: 10px 18px; font-family: var(--font-heading);
-      font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
-      cursor: pointer; margin-top: 10px; border-radius: 2px; width: 100%; max-width: 270px;
+      border: 1px solid var(--gold); padding: 8px 14px; font-family: var(--font-heading);
+      font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none;
+      cursor: pointer; margin-top: 8px; border-radius: 2px; width: 100%; max-width: 250px;
       transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     .btn-gothic:hover { background: var(--midnight-light); color: #FFFFFF; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
-    .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 6px; }
+    .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 5px; }
 
     .btn-copy {
       background: var(--gold); color: var(--midnight); border: 1px solid var(--midnight);
-      padding: 8px 16px; font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 1px;
-      text-transform: uppercase; cursor: pointer; border-radius: 2px; margin-top: 10px;
+      padding: 6px 12px; font-family: var(--font-heading); font-size: 0.68rem; letter-spacing: 1px;
+      text-transform: uppercase; cursor: pointer; border-radius: 2px; margin-top: 6px;
       transition: background 0.3s ease;
     }
     .btn-copy:hover { background: var(--gold-light); }
 
-    .form-group { text-align: left; margin-bottom: 22px; position: relative; z-index: 2; }
-    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
+    /* AJUSTES ADAPTATIVOS PARA SMARTPHONES (VERSIÓN MÓVIL PANTALLA CHICA) */
+    @media (max-width: 600px) {
+      .image-card-contain {
+        padding: 16% 12%;
+        aspect-ratio: 5 / 7.2;
+      }
+      .header-names { font-size: 1.25rem; }
+      .header-ampersand { font-size: 1rem; }
+      .storybook-quote { font-size: 0.75rem; margin: 4px 0; }
+      .event-date-large { font-size: 0.9rem; margin-top: 4px; }
+      .event-time { font-size: 0.75rem; }
+      .timer-box { min-width: 38px; padding: 2px 4px; }
+      .timer-num { font-size: 0.8rem; }
+      .timer-label { font-size: 0.5rem; }
+      .btn-gothic { padding: 7px 10px; font-size: 0.65rem; max-width: 210px; }
+      .card-title-mobile { font-size: 1rem !important; margin-bottom: 4px !important; }
+      .card-text-mobile { font-size: 0.78rem !important; line-height: 1.25 !important; }
+      .bank-box-mobile { padding: 5px !important; max-width: 230px !important; }
+      .nav-arrow { width: 36px; height: 36px; font-size: 1.4rem; }
+    }
+
+    .form-group { text-align: left; margin-bottom: 18px; position: relative; z-index: 2; }
+    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 4px; text-transform: uppercase; }
     .form-control { 
-      width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); 
-      background: rgba(250, 246, 238, 0.8); font-family: var(--font-body); font-size: 1.05rem; 
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border-gold); 
+      background: rgba(250, 246, 238, 0.8); font-family: var(--font-body); font-size: 0.95rem; 
       color: var(--midnight); border-radius: 3px; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
     .form-control:focus { border-color: var(--midnight); box-shadow: 0 0 8px rgba(197, 160, 89, 0.4); background: #FAF6EE; }
 
     .phone-row { display: flex; gap: 8px; }
-    .phone-row select { width: 110px; }
-    .guest-name-field { margin-top: 8px; animation: fadeInField 0.4s ease forwards; }
+    .phone-row select { width: 100px; }
+    .guest-name-field { margin-top: 6px; animation: fadeInField 0.4s ease forwards; }
     @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-    .audio-recorder-box { background: rgba(250, 246, 238, 0.8); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
-    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
+    .audio-recorder-box { background: rgba(250, 246, 238, 0.8); border: 1px dashed var(--gold); padding: 12px; border-radius: 4px; margin-top: 8px; text-align: center; }
+    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; font-family: var(--font-heading); }
     .rec-btn.recording { background: #8a1c1c; color: #fff; }
-    .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
-    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
+    .notice-info { font-size: 0.75rem; color: var(--midnight-light); margin-top: 10px; font-style: italic; }
+    #statusMessage { margin-top: 12px; font-weight: 600; font-size: 0.85rem; text-align: center; }
 
     #rsvpEnvelopeModal {
       position: fixed; inset: 0; z-index: 2500;
       background: rgba(11, 22, 38, 0.85);
-      display: flex; justify-content: center; align-items: center; padding: 20px;
+      display: flex; justify-content: center; align-items: center; padding: 15px;
       opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     #rsvpEnvelopeModal.active { opacity: 1; visibility: visible; }
+
+    /* ESTILOS PARA IMPRESIÓN/DESCARGA DEL PASE DIGITAL (PDF INVITACIÓN) */
+    @media print {
+      body * { visibility: hidden; }
+      #printableTicket, #printableTicket * { visibility: visible; }
+      #printableTicket {
+        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        display: flex !important; flex-direction: column; justify-content: center; align-items: center;
+        background-image: url('dresscode2.jpg') !important; background-size: cover !important;
+        background-position: center !important; color: #120E0C !important;
+      }
+    }
+    #printableTicket {
+      display: none;
+      width: 480px; height: 650px; padding: 40px; text-align: center;
+      background-image: url('dresscode2.jpg'); background-size: cover; background-position: center;
+      border: 2px solid #C5A059; box-shadow: 0 0 20px rgba(0,0,0,0.5); border-radius: 6px;
+    }
   </style>
 </head>
 <body>
@@ -399,7 +437,7 @@
           <div class="header-names ink-text">Yazmin <span class="header-ampersand">&</span> Gonzalo</div>
           <p class="storybook-quote ink-text">
             "Y la amaba con un amor que era más que el amor..."<br>
-            <span style="font-size:0.8rem; letter-spacing:1px; color:#4a3828;">— Edgar Allan Poe (Anabel Lee)</span>
+            <span style="font-size:0.75rem; letter-spacing:1px; color:#4a3828;">— Edgar Allan Poe (Anabel Lee)</span>
           </p>
           <div class="event-date-large ink-text">4 DE SEPTIEMBRE DE 2027</div>
           <div class="event-time ink-text">12:45 HS</div>
@@ -415,44 +453,45 @@
       <!-- Papel 2: UBICACIÓN & FECHA (`tarjetados.png`) -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain lace-card-2">
-          <h2 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 6px;" class="ink-text">UBICACIÓN & FECHA</h2>
-          <p class="ink-text"><strong>Los Cipreses 1</strong></p>
-          <p class="ink-text" style="font-size: 0.9rem; margin-bottom: 6px; line-height: 1.3;">
+          <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 4px;" class="ink-text card-title-mobile">UBICACIÓN & FECHA</h2>
+          <p class="ink-text card-text-mobile"><strong>Los Cipreses 1</strong></p>
+          <p class="ink-text card-text-mobile" style="font-size: 0.85rem; margin-bottom: 4px; line-height: 1.25;">
             25 de Mayo 1696, Min. Rivadavia,<br>
             Alte. Brown, Burzaco, Argentina.
           </p>
           <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button>
           <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
+          <button class="btn-gothic" style="background:#8a1c1c; border-color:#E0C078; margin-top:4px;" onclick="downloadPassPDF()">🎟 DESCARGAR PASE/PDF</button>
         </section>
       </div>
 
-      <!-- Papel 3: Dress Code (`dresscode2.jpg`) -->
+      <!-- Papel 3: DRESS CODE (`dresscode2.jpg`) -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain dresscode-card-bg">
-          <h2 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 10px;" class="ink-text">DRESS CODE</h2>
-          <p style="font-size: 1.25rem; font-family: var(--font-heading); letter-spacing: 1px;" class="ink-text">Elegante</p>
+          <h2 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 6px;" class="ink-text card-title-mobile">DRESS CODE</h2>
+          <p style="font-size: 1.15rem; font-family: var(--font-heading); letter-spacing: 1px;" class="ink-text card-text-mobile">Elegante</p>
         </section>
       </div>
 
-      <!-- Papel 4: Regalos / Buzón (`dresscode2.jpg`) -->
+      <!-- Papel 4: REGALOS / BUZÓN (`dresscode3.jpg`) -->
       <div class="section-card-wrapper">
-        <section class="section-card image-card-contain dresscode-card-bg">
-          <h2 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 6px;" class="ink-text">REGALOS</h2>
-          <p style="margin-bottom: 8px; font-size:0.9rem;" class="ink-text">Contaremos con un <strong>buzón físico para sobres</strong> el día del evento.</p>
-          <p style="margin-bottom: 10px; font-size:0.9rem;" class="ink-text">Atención virtual:</p>
-          <div style="background: rgba(255,255,255,0.7); border: 1px dashed var(--gold); padding: 8px; border-radius: 4px; display:inline-block; width:100%; max-width:290px;">
-            <p style="font-size: 0.85rem;" class="ink-text"><strong>CBU / CVU:</strong> <span id="cbuText">0000003100000000000000</span></p>
-            <p style="font-size: 0.85rem;" class="ink-text"><strong>Alias:</strong> <span id="aliasText">boda.yazmin.gonzalo</span></p>
+        <section class="section-card image-card-contain gifts-card-bg">
+          <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 4px;" class="ink-text card-title-mobile">REGALOS</h2>
+          <p style="margin-bottom: 6px; font-size:0.82rem;" class="ink-text card-text-mobile">Contaremos con un <strong>buzón físico para sobres</strong> en el evento.</p>
+          <p style="margin-bottom: 6px; font-size:0.82rem;" class="ink-text card-text-mobile">Atención virtual:</p>
+          <div class="bank-box-mobile" style="background: rgba(255,255,255,0.75); border: 1px dashed var(--gold); padding: 6px; border-radius: 4px; display:inline-block; width:100%; max-width:250px;">
+            <p style="font-size: 0.78rem;" class="ink-text card-text-mobile"><strong>CBU:</strong> <span id="cbuText">0000003100000000000000</span></p>
+            <p style="font-size: 0.78rem;" class="ink-text card-text-mobile"><strong>Alias:</strong> <span id="aliasText">boda.yazmin.gonzalo</span></p>
             <button class="btn-copy" onclick="copyBankInfo()">📋 Copiar Datos Bancarios</button>
           </div>
         </section>
       </div>
 
-      <!-- Papel 5: Confirmación de Asistencia (`dresscode3.jpg`) -->
+      <!-- Papel 5: CONFIRMAR ASISTENCIA (`dresscode.jpg`) -->
       <div class="section-card-wrapper">
         <section class="section-card image-card-contain rsvp-card-bg">
-          <h2 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 10px;" class="ink-text">CONFIRMAR ASISTENCIA</h2>
-          <p style="margin-bottom: 15px; font-style: italic; font-size:0.95rem;" class="ink-text">Despliega el sobre oficial para registrar tu respuesta.</p>
+          <h2 style="font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 6px;" class="ink-text card-title-mobile">CONFIRMAR ASISTENCIA</h2>
+          <p style="margin-bottom: 10px; font-style: italic; font-size:0.85rem;" class="ink-text card-text-mobile">Despliega el sobre oficial para registrar tu respuesta.</p>
           <button class="btn-gothic" onclick="openRSVPEnvelope()">ABRIR SOBRE DE RSVP</button>
         </section>
       </div>
@@ -472,9 +511,9 @@
 
   <!-- MODAL / SOBRE SECUNDARIO PARA EL FORMULARIO DE RSVP -->
   <div id="rsvpEnvelopeModal">
-    <div class="section-card reveal" style="max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; margin:0;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight);">FORMULARIO DE ASISTENCIA</h2>
+    <div class="section-card reveal" style="max-width: 580px; width: 100%; max-height: 90vh; overflow-y: auto; margin:0; padding:20px 15px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--midnight);">FORMULARIO DE ASISTENCIA</h2>
         <button onclick="closeRSVPEnvelope()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--midnight);">×</button>
       </div>
       
@@ -530,15 +569,15 @@
 
         <div class="form-group">
           <label for="comments">Comentarios o Mensaje</label>
-          <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
+          <textarea id="comments" class="form-control" rows="2" placeholder="Déjale una nota a los novios..."></textarea>
         </div>
 
         <div class="form-group">
           <label>Audio para los novios (Máx. 120s)</label>
           <div class="audio-recorder-box">
             <button type="button" class="rec-btn" id="recordBtn" onclick="toggleRecording()">🎤 Grabar Audio</button>
-            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para iniciar grabación</p>
-            <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
+            <p id="recStatus" style="font-size:0.7rem; margin-top:4px; color:var(--midnight-light);">Toca para iniciar grabación</p>
+            <audio id="audioPreview" controls style="display:none; width:100%; margin-top:8px;"></audio>
           </div>
         </div>
 
@@ -547,6 +586,20 @@
         <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
       </form>
     </div>
+  </div>
+
+  <!-- PLANTILLA DE PASE DE INVITACIÓN / PDF IMPRIMIBLE -->
+  <div id="printableTicket">
+    <h1 style="font-family: var(--font-display); font-size: 1.8rem; color: #120E0C; margin-bottom: 8px;">Yazmin & Gonzalo</h1>
+    <p style="font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 2px; color: #4a121a; margin-bottom: 20px;">PASE OFICIAL DE INVITACIÓN</p>
+    <div style="border-top: 1px solid #C5A059; border-bottom: 1px solid #C5A059; padding: 15px 0; margin-bottom: 20px;">
+      <p style="font-family: var(--font-heading); font-size: 1rem; color: #120E0C; font-weight: bold; margin-bottom: 5px;">FECHA Y HORA</p>
+      <p style="font-size: 1.1rem; color: #120E0C; margin-bottom: 12px;">Sábado, 4 de Septiembre de 2027 - 12:45 HS</p>
+      <p style="font-family: var(--font-heading); font-size: 1rem; color: #120E0C; font-weight: bold; margin-bottom: 5px;">LUGAR</p>
+      <p style="font-size: 1.05rem; color: #120E0C;">Los Cipreses 1<br>25 de Mayo 1696, Min. Rivadavia, Burzaco</p>
+    </div>
+    <p style="font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 1px; color: #120E0C;">DRESS CODE: ELEGANTE</p>
+    <p style="font-size: 0.75rem; color: #5a4533; margin-top: 25px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
   </div>
 
   <script>
@@ -599,12 +652,11 @@
         overlay.classList.add('opened');
         invitation.classList.add('visible');
         document.body.classList.add('envelope-open');
-        
         startCountdown();
       }, 2000);
     }
 
-    /* LÓGICA DE CARRUSEL HORIZONTAL */
+    /* CARRUSEL Y NAVEGACIÓN */
     const slider = document.getElementById('cardsSlider');
     const dots = document.querySelectorAll('.dot');
 
@@ -641,6 +693,10 @@
       }).catch(err => {
         console.error("Error al copiar", err);
       });
+    }
+
+    function downloadPassPDF() {
+      window.print();
     }
 
     function startCountdown() {
