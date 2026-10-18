@@ -34,7 +34,7 @@
     }
     body.envelope-open { overflow-y: auto; }
 
-    /* Pantalla Inicial con fondo.png y sombras 3D */
+    /* Overlay inicial */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-image: linear-gradient(rgba(11, 22, 38, 0.8), rgba(11, 22, 38, 0.9)), url('fondo.png');
@@ -46,119 +46,109 @@
     }
     #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* Estructura del Sobre 3D con Sombras Realistas y bordes limpios */
+    /* Contenedor del Sobre (Permite que la tarjeta sobresalga sin cortarse) */
     .envelope-container {
-      width: 100%; max-width: 420px; height: 340px;
+      width: 100%; max-width: 420px; height: 280px;
+      position: relative;
+      perspective: 1000px;
+      margin-top: 50px;
+    }
+
+    /* Fondo posterior del sobre */
+    .envelope-back {
+      position: absolute; inset: 0;
       background-image: url('fondo.png');
       background-size: cover;
       background-position: center;
-      border: none;
-      position: relative;
-      box-shadow: 
-        0 35px 70px rgba(0, 0, 0, 0.75), 
-        0 15px 25px rgba(0, 0, 0, 0.5),
-        inset 0 0 40px rgba(0, 0, 0, 0.4);
       border-radius: 8px;
-      overflow: hidden; /* Limpia y oculta cualquier desborde en las esquinas redondeadas */
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+      filter: brightness(0.7);
+      z-index: 1;
     }
 
-    .envelope-container::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.35) 100%);
-      pointer-events: none;
-      border-radius: 8px;
+    /* Tarjeta Interior (Completamente oculta adentro antes del clic) */
+    .envelope-card-preview {
+      position: absolute; inset: 12px;
+      background-image: url('letter.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center; padding: 20px;
       z-index: 2;
+      border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transform: translateY(0);
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .envelope-container.open .envelope-card-preview {
+      transform: translateY(-110px); /* Sube suavemente por encima del sobre */
+      opacity: 1;
     }
 
+    /* Bolsillo Frontal del Sobre */
     .envelope-pocket {
-      position: absolute; bottom: 0; left: 0; width: 100%; height: 210px;
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 180px;
       background-image: url('fondo.png');
       background-size: cover;
       background-position: bottom;
-      border-top: none;
-      z-index: 2;
+      z-index: 3;
       border-radius: 0 0 8px 8px;
       box-shadow: inset 0 15px 15px -10px rgba(0, 0, 0, 0.6);
-      filter: brightness(0.85);
+      filter: brightness(0.9);
       pointer-events: none;
+      clip-path: polygon(0 0, 50% 35px, 100% 0, 100% 100%, 0 100%);
     }
 
+    /* Solapa Superior del Sobre */
     .envelope-flap {
-      position: absolute; top: -1px; left: -1px; right: -1px; height: 161px;
+      position: absolute; top: 0; left: 0; width: 100%; height: 150px;
       background-image: url('fondo.png');
       background-size: cover;
       background-position: top;
-      clip-path: polygon(0 1px, 50% 100%, 100% 1px);
-      border-bottom: none;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
       transform-origin: top;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 4;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
       filter: brightness(0.95);
       pointer-events: none;
     }
     .envelope-container.open .envelope-flap {
       transform: rotateX(180deg);
-      z-index: 0;
-      box-shadow: none;
+      z-index: 1;
     }
 
-    /* Sello de Cera con waxseal.png transparente y centrado perfecto */
+    /* Botón Sello de Cera con waxseal.png */
     .wax-seal-btn {
-      position: absolute; top: 115px; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 105px; left: 50%; transform: translateX(-50%);
       background-color: transparent;
       background-image: url('waxseal.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       border: none;
-      width: 110px; height: 110px; 
-      border-radius: 50%; 
+      width: 105px; height: 105px;
+      border-radius: 50%;
       cursor: pointer;
       display: flex; justify-content: center; align-items: center;
-      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.7));
+      filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.7));
       z-index: 20;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.5s ease;
+      transition: transform 0.3s ease, opacity 0.4s ease;
     }
-    .wax-seal-btn:hover { transform: translateX(-50%) scale(1.1); filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.85)) brightness(1.1); }
-    .wax-seal-btn span { 
-      font-family: var(--font-heading); 
-      font-size: 0.7rem; 
-      letter-spacing: 2px; 
-      color: var(--gold-light); 
-      font-weight: bold; 
+    .wax-seal-btn:hover { transform: translateX(-50%) scale(1.08); }
+    .wax-seal-btn span {
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--gold-light);
+      font-weight: bold;
       text-shadow: 0 2px 4px rgba(0,0,0,0.9);
       pointer-events: none;
     }
     .envelope-container.open .wax-seal-btn {
       opacity: 0;
       pointer-events: none;
-    }
-
-    /* Tarjeta interior oculta al inicio dentro del sobre */
-    .envelope-card-preview {
-      position: absolute; inset: 15px; 
-      background-image: url('letter.jpg');
-      background-size: cover;
-      background-position: center;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center; text-align: center; padding: 25px;
-      z-index: 1; 
-      transform: translateY(40px);
-      opacity: 0;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-      border-radius: 4px;
-      pointer-events: none;
-    }
-    .envelope-container.open .envelope-card-preview {
-      transform: translateY(-55px);
-      opacity: 1;
-      z-index: 3;
-    }
-    #envelopeOverlay.opened .envelope-container {
-      opacity: 0;
-      transition: opacity 0.5s ease;
     }
 
     /* Contenido Principal de la Invitación */
@@ -200,294 +190,4 @@
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
 
     .form-group { text-align: left; margin-bottom: 20px; }
-    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
-    .phone-row { display: flex; gap: 8px; }
-    .phone-row select { width: 110px; }
-    .guest-name-field { margin-top: 8px; animation: fadeInField 0.4s ease forwards; }
-    @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
-    .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
-    .rec-btn.recording { background: #8a1c1c; color: #fff; }
-    .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
-    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
-  </style>
-</head>
-<body>
-
-  <!-- Pantalla Inicial con fondo.png y la tarjeta interior con letter.jpg -->
-  <div id="envelopeOverlay">
-    <div class="envelope-container" id="envelopeBox">
-      <div class="envelope-flap"></div>
-      
-      <!-- Tarjeta interior oculta al inicio -->
-      <div class="envelope-card-preview">
-        <p style="font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 2px; color: #4a121a; font-weight: bold; margin-bottom: 5px;">ESTÁS INVITADO A LA BODA DE</p>
-        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight); text-shadow: 0 1px 1px rgba(255,255,255,0.6);">Yazmín & Gonzalo</h3>
-      </div>
-
-      <div class="envelope-pocket"></div>
-      
-      <!-- Sello de Cera con waxseal.png transparente y texto centrado -->
-      <button class="wax-seal-btn" onclick="openEnvelope()">
-        <span>ABRIR</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Contenido Principal con Tarjetas en Cascada -->
-  <main id="mainInvitation">
-    
-    <!-- Tarjeta 1: Presentación y Cita de Poe -->
-    <section class="section-card">
-      <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
-      <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
-      <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
-      <div class="event-time">12:45 HS</div>
-      <div class="timer-grid">
-        <div class="timer-box"><span class="timer-num" id="dias">00</span><span class="timer-label">Días</span></div>
-        <div class="timer-box"><span class="timer-num" id="horas">00</span><span class="timer-label">Hs</span></div>
-        <div class="timer-box"><span class="timer-num" id="minutos">00</span><span class="timer-label">Min</span></div>
-        <div class="timer-box"><span class="timer-num" id="segundos">00</span><span class="timer-label">Seg</span></div>
-      </div>
-    </section>
-
-    <!-- Tarjeta 2: Ubicación -->
-    <section class="section-card">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
-      <p><strong>Los Cipreses 1</strong></p>
-      <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
-      <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button><br>
-      <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
-    </section>
-
-    <!-- Tarjeta 3: Formulario de Asistencia -->
-    <section class="section-card">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
-      <form id="rsvpForm" onsubmit="handleRSVP(event)">
-        <div class="form-group">
-          <label for="fullName">Nombre y Apellido *</label>
-          <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmín Pérez">
-        </div>
-
-        <div class="form-group">
-          <label for="attending">¿Asistirás? *</label>
-          <select id="attending" class="form-control" required>
-            <option value="Sí">Sí, asistiré con gusto</option>
-            <option value="No">Lamentablemente no podré asistir</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="guests">Cantidad de acompañantes (Máx. 5)</label>
-          <select id="guests" class="form-control" onchange="updateGuestFields()">
-            <option value="0" selected>0 (Solo yo)</option>
-            <option value="1">1 Acompañante</option>
-            <option value="2">2 Acompañantes</option>
-            <option value="3">3 Acompañantes</option>
-            <option value="4">4 Acompañantes</option>
-            <option value="5">5 Acompañantes</option>
-          </select>
-          <div id="guestNamesContainer"></div>
-        </div>
-
-        <div class="form-group">
-          <label>Teléfono de Contacto *</label>
-          <div class="phone-row">
-            <select id="countryCode" class="form-control">
-              <option value="54">+54 (AR)</option>
-              <option value="353" selected>+353 (IE)</option>
-              <option value="1">+1 (US)</option>
-              <option value="34">+34 (ES)</option>
-            </select>
-            <input type="tel" id="phoneNumber" class="form-control" required placeholder="1112345678">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="dietary">Restricciones Alimentarias</label>
-          <input type="text" id="dietary" class="form-control" placeholder="Vegetariano, celíaco, alergias...">
-        </div>
-
-        <div class="form-group">
-          <label for="musicLink">Sugerencia de Música / Canción (Link)</label>
-          <input type="text" id="musicLink" class="form-control" placeholder="Ej: Nombre del tema o link">
-        </div>
-
-        <div class="form-group">
-          <label for="comments">Comentarios o Mensaje</label>
-          <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Audio para los novios (Máx. 120s)</label>
-          <div class="audio-recorder-box">
-            <button type="button" class="rec-btn" id="recordBtn" onclick="toggleRecording()">🎤 Grabar Audio</button>
-            <p id="recStatus" style="font-size:0.75rem; margin-top:5px; color:var(--midnight-light);">Toca para iniciar grabación</p>
-            <audio id="audioPreview" controls style="display:none; width:100%; margin-top:10px;"></audio>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-gothic">CONFIRMAR & ENVIAR</button>
-        <div id="statusMessage"></div>
-        <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
-      </form>
-    </section>
-  </main>
-
-  <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
-    const WHATSAPP_PHONE = "353892564030";
-
-    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
-
-    function openEnvelope() {
-      const envelopeBox = document.getElementById('envelopeBox');
-      const overlay = document.getElementById('envelopeOverlay');
-      const invitation = document.getElementById('mainInvitation');
-      
-      envelopeBox.classList.add('open');
-      
-      // Espera exactamente 2 segundos con la tarjeta antes de mostrar el contenido principal
-      setTimeout(() => {
-        overlay.classList.add('opened');
-        invitation.classList.add('visible');
-        document.body.classList.add('envelope-open');
-        
-        // Revelar las tarjetas escalonadamente
-        const cards = document.querySelectorAll('.section-card');
-        cards.forEach((card, index) => {
-          setTimeout(() => {
-            card.classList.add('reveal');
-          }, index * 250);
-        });
-
-        startCountdown();
-      }, 2000);
-    }
-
-    function startCountdown() {
-      const targetDate = new Date('September 4, 2027 12:45:00').getTime();
-      setInterval(() => {
-        const now = new Date().getTime(), diff = targetDate - now;
-        if (diff <= 0) return;
-        document.getElementById('dias').textContent = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-        document.getElementById('horas').textContent = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-        document.getElementById('minutos').textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-        document.getElementById('segundos').textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-      }, 1000);
-    }
-
-    function openMap() { window.open('https://maps.google.com/?q=25+de+Mayo+1696,+Burzaco,+Buenos+Aires', '_blank'); }
-    function addToCalendar() { window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Yazmin+y+Gonzalo&dates=20270904T154500Z/20270904T210000Z", '_blank'); }
-
-    function updateGuestFields() {
-      const count = parseInt(document.getElementById('guests').value, 10);
-      const container = document.getElementById('guestNamesContainer');
-      container.innerHTML = '';
-      for (let i = 1; i <= count; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-control guest-name-field';
-        input.placeholder = `Nombre y Apellido Acompañante ${i}`;
-        input.required = true;
-        container.appendChild(input);
-      }
-    }
-
-    async function toggleRecording() {
-      const btn = document.getElementById('recordBtn');
-      const status = document.getElementById('recStatus');
-
-      if (!isRecording) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-          mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
-            reader.onloadend = () => { audioBase64Data = reader.result.split(',')[1]; };
-            document.getElementById('audioPreview').src = URL.createObjectURL(audioBlob);
-            document.getElementById('audioPreview').style.display = 'block';
-          };
-
-          mediaRecorder.start();
-          isRecording = true;
-          btn.textContent = "⏹ Detener Grabación";
-          btn.classList.add('recording');
-          status.textContent = "Grabando... (Hable ahora)";
-        } catch (err) {
-          alert("Error: No se pudo acceder al micrófono.");
-        }
-      } else {
-        mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
-        isRecording = false;
-        btn.textContent = "🎤 Grabar Nuevamente";
-        btn.classList.remove('recording');
-        status.textContent = "¡Audio grabado con éxito!";
-      }
-    }
-
-    async function handleRSVP(event) {
-      event.preventDefault();
-      const statusDiv = document.getElementById('statusMessage');
-      statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Enviando confirmación y abriendo WhatsApp...";
-
-      const name = document.getElementById('fullName').value.trim();
-      const attending = document.getElementById('attending').value;
-      const guestsCount = parseInt(document.getElementById('guests').value, 10);
-      const phone = `+${document.getElementById('countryCode').value}${document.getElementById('phoneNumber').value.trim()}`;
-      const dietary = document.getElementById('dietary').value.trim() || "Ninguna";
-      const musicLink = document.getElementById('musicLink').value.trim() || "-";
-      const commentsInput = document.getElementById('comments').value.trim() || "-";
-
-      const guestInputs = document.querySelectorAll('.guest-name-field');
-      let guestNames = [];
-      guestInputs.forEach(input => { if (input.value.trim()) guestNames.push(input.value.trim()); });
-      const formattedGuestNames = guestNames.length > 0 ? guestNames.join(', ') : "-";
-
-      const now = new Date();
-      const payload = {
-        Fecha: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`,
-        Nombre: name,
-        Asistencia: attending,
-        Acompañantes: guestsCount,
-        NombresAcompanantes: formattedGuestNames,
-        Telefono: phone,
-        Restricciones: dietary,
-        Musica: musicLink,
-        Comentarios: commentsInput,
-        audioBase64: audioBase64Data || "",
-        audioFileName: audioBase64Data ? `audio_${name.replace(/\s+/g, '_')}.webm` : ""
-      };
-
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        console.error("Error enviando a Google Sheets:", err);
-      }
-
-      let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
-      if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
-      msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
-      if (musicLink !== "-") msg += `\n*Música sugerida:* ${musicLink}`;
-      if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
-      if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
-
-      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-    }
-  </script>
-</body>
-</html>
+    .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing
