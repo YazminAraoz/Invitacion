@@ -13,18 +13,19 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     :root {
-      --bg-cream: #FAF6EE;
-      --midnight: #0B1626;
-      --midnight-light: #182B45;
-      --gold: #C5A059;
-      --gold-light: #E0C078;
-      --border-gold: rgba(197, 160, 89, 0.4);
+      --bg-cream: #F5EFEB;
+      --midnight: #121A24;
+      --midnight-light: #1E2D3D;
+      --gold: #D4AF37;
+      --gold-light: #F3E5AB;
+      --copper: #B87333;
+      --border-gold: rgba(212, 175, 55, 0.4);
       --font-display: 'Cinzel Decorative', serif;
       --font-heading: 'Cinzel', serif;
       --font-body: 'Cormorant Garamond', serif;
     }
     body {
-      background-color: var(--bg-cream);
+      background-color: var(--midnight);
       color: var(--midnight);
       font-family: var(--font-body);
       font-size: 18px;
@@ -32,68 +33,103 @@
       overflow-x: hidden;
       min-height: 100vh;
     }
-    body.envelope-open { overflow-y: auto; }
+    body.envelope-open { background-color: var(--bg-cream); overflow-y: auto; }
 
+    /* SOBRE ESTÉTICA STEAMPUNK / VICTORIANA CON ENCAJE */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
-      background-color: var(--midnight);
-      background-image: radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.9) 0%, rgba(11, 22, 38, 1) 80%);
+      background: radial-gradient(circle at center, #1E2D3D 0%, #0B1017 100%);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       padding: 20px; transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
     }
     #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; display: none !important; }
 
-    .old-envelope {
-      width: 100%; max-width: 380px;
-      background: #F4EEDD;
-      border: 2px solid var(--gold);
-      padding: 40px 20px 30px 20px;
-      border-radius: 4px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    .steampunk-envelope {
+      width: 100%; max-width: 400px;
+      background: #231F20;
+      border: 3px double var(--copper);
+      padding: 50px 20px 30px 20px;
+      border-radius: 6px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(184, 115, 51, 0.15);
       text-align: center;
       position: relative;
+      background-image: 
+        radial-gradient(var(--copper) 1px, transparent 1px),
+        linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 20px 20px;
     }
 
-    .celestial-svg { width: 90px; height: 90px; margin: 15px auto 10px auto; display: block; }
-    .envelope-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--midnight); margin-bottom: 5px; }
-    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
+    /* Patrón de Encaje Steampunk en el borde */
+    .steampunk-envelope::after {
+      content: '';
+      position: absolute; inset: 6px;
+      border: 1px dashed var(--gold);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .gear-svg { width: 85px; height: 85px; margin: 0 auto 15px auto; display: block; animation: spinGear 20s linear infinite; }
+    @keyframes spinGear { 100% { transform: rotate(360deg); } }
+
+    .envelope-title { font-family: var(--font-display); font-size: 1.6rem; color: var(--gold-light); margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 3px; color: var(--copper); text-transform: uppercase; margin-bottom: 25px; }
 
     .wax-seal-btn {
-      background: var(--midnight); border: 2px solid var(--gold); color: var(--gold-light);
-      width: 75px; height: 75px; border-radius: 50%; margin: 10px auto 0 auto; cursor: pointer;
+      background: radial-gradient(circle, #8A2525 0%, #4A0E0E 100%);
+      border: 2px solid var(--gold);
+      color: var(--gold-light);
+      width: 80px; height: 80px; border-radius: 50%; margin: 15px auto 0 auto; cursor: pointer;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.5);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); transition: transform 0.3s ease, filter 0.3s ease;
     }
-    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; }
+    .wax-seal-btn:hover { transform: scale(1.1); filter: brightness(1.2); }
+    .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 3px; font-weight: bold; }
 
+    /* CONTENIDO PRINCIPAL CON EFECTO LIBRO POP-UP */
     #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
-    #mainInvitation.visible { display: block; animation: fadeInContent 1s ease-out forwards; }
-    @keyframes fadeInContent { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    #mainInvitation.visible { display: block; }
 
     .section-card {
       background: #FFFFFF; border: 1px solid var(--border-gold);
-      padding: 30px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
-      box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+      padding: 35px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
+      box-shadow: 0 10px 30px rgba(18, 26, 36, 0.08);
+      opacity: 0; transform: scale(0.9) translateY(30px);
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    
+    /* Activación del Pop-Up escalonado */
+    #mainInvitation.visible .section-card:nth-child(1) { opacity: 1; transform: scale(1) translateY(0); transition-delay: 0.1s; }
+    #mainInvitation.visible .section-card:nth-child(2) { opacity: 1; transform: scale(1) translateY(0); transition-delay: 0.25s; }
+    #mainInvitation.visible .section-card:nth-child(3) { opacity: 1; transform: scale(1) translateY(0); transition-delay: 0.4s; }
+    #mainInvitation.visible .section-card:nth-child(4) { opacity: 1; transform: scale(1) translateY(0); transition-delay: 0.55s; }
+    #mainInvitation.visible .section-card:nth-child(5) { opacity: 1; transform: scale(1) translateY(0); transition-delay: 0.7s; }
 
-    .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
-    .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--gold); display: block; font-size: 1.8rem; }
-    .storybook-quote { font-style: italic; font-size: 1.15rem; color: var(--midnight-light); margin: 20px 0; }
-    .event-date-large { font-family: var(--font-heading); font-size: 1.4rem; color: var(--midnight); letter-spacing: 1px; margin-top: 15px; font-weight: 600; }
-    .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--gold); letter-spacing: 2px; }
+    .section-card::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(212, 175, 55, 0.2); pointer-events: none; }
 
-    .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+    .header-names { font-family: var(--font-display); font-size: 2.3rem; color: var(--midnight); line-height: 1.2; margin-bottom: 15px; }
+    .header-ampersand { font-family: var(--font-body); font-style: italic; color: var(--copper); display: block; font-size: 1.8rem; }
+    
+    /* Cita de Edgar Allan Poe */
+    .storybook-quote { font-style: italic; font-size: 1.15rem; color: var(--midnight-light); margin: 20px auto; max-width: 500px; line-height: 1.5; }
+    
+    .event-date-large { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); letter-spacing: 2px; margin-top: 20px; font-weight: 600; }
+    .event-time { font-family: var(--font-heading); font-size: 1rem; color: var(--copper); letter-spacing: 2px; margin-top: 5px; }
+
+    .timer-grid { display: flex; justify-content: center; gap: 12px; margin-top: 25px; }
     .timer-box { background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 10px 12px; min-width: 65px; border-radius: 4px; }
     .timer-num { font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); font-weight: 700; display: block; }
-    .timer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+    .timer-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--copper); }
 
     .btn-gothic {
       display: inline-block; background: var(--midnight); color: var(--gold-light);
       border: 1px solid var(--gold); padding: 12px 24px; font-family: var(--font-heading);
       font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
       cursor: pointer; margin-top: 15px; border-radius: 2px; width: 100%; max-width: 300px;
+      transition: background 0.3s ease;
     }
+    .btn-gothic:hover { background: var(--midnight-light); }
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
+    .btn-secondary:hover { background: var(--midnight); color: var(--gold-light); }
 
     .form-group { text-align: left; margin-bottom: 20px; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
@@ -104,36 +140,34 @@
 
     .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
     .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
-    .rec-btn.recording { background: #334e68; color: #fff; }
+    .rec-btn.recording { background: #8A2525; color: #fff; }
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
     #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
   </style>
 </head>
 <body>
 
+  <!-- SOBRE STEAMPUNK / ENCAJE -->
   <div id="envelopeOverlay">
-    <div class="old-envelope">
-      <svg class="celestial-svg" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="#C5A059" stroke-width="1.5" />
-        <path d="M 50 10 A 40 40 0 0 1 50 90 A 25 25 0 0 0 50 10" fill="#0B1626" stroke="#C5A059" stroke-width="1" />
-        <circle cx="65" cy="40" r="3" fill="#C5A059" />
-        <path d="M 30 50 Q 40 35 50 50 Q 40 65 30 50" fill="#C5A059" />
+    <div class="steampunk-envelope">
+      <svg class="gear-svg" viewBox="0 0 100 100" fill="none" stroke="#D4AF37" stroke-width="2">
+        <circle cx="50" cy="50" r="20" stroke-dasharray="6,4"/>
+        <path d="M50 15 v10 M50 75 v10 M15 50 h10 M75 50 h10 M25 25 l7 7 M68 68 l7 7 M25 75 l7 -7 M68 32 l7 -7" stroke-width="3"/>
+        <circle cx="50" cy="50" r="10" fill="#B87333" stroke="none"/>
       </svg>
       <div class="envelope-title">Yazmín & Gonzalo</div>
       <div class="envelope-subtitle">Save the Date</div>
       <button class="wax-seal-btn" onclick="openEnvelope()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E0C078" stroke-width="1.5">
-          <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-        </svg>
         <span>ABRIR</span>
       </button>
     </div>
   </div>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <main id="mainInvitation">
     <section class="section-card">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
-      <p class="storybook-quote">"Un capítulo eterno que comienza bajo el mismo cielo."</p>
+      <p class="storybook-quote">"Y nos amábamos con un amor que era más que amor... un lazo que desafía el tiempo y el destino."<br><span style="font-size: 0.9rem; color: var(--copper);">— Edgar Allan Poe</span></p>
       <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
       <div class="event-time">12:45 HS</div>
       <div class="timer-grid">
@@ -150,6 +184,19 @@
       <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
       <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button><br>
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
+    </section>
+
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 8px;">DRESS CODE</h2>
+      <p style="font-family: var(--font-heading); letter-spacing: 2px; color: var(--copper); text-transform: uppercase;">Formal Gala</p>
+    </section>
+
+    <section class="section-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
+      <p style="font-size: 0.95rem;">Su presencia es nuestro mayor regalo. Habrá un buzón en el salón o pueden realizar un obsequio digital:</p>
+      <div style="background: var(--bg-cream); border: 1px solid var(--border-gold); padding: 12px; margin-top: 10px; border-radius: 4px;">
+        <p><strong>Alias:</strong> <span style="font-family: monospace; font-weight: bold;">YAZMIN.GONZALO.BODA</span></p>
+      </div>
     </section>
 
     <section class="section-card">
@@ -229,7 +276,7 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
     const WHATSAPP_PHONE = "353892564030";
 
-    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, audioFileExt = "webm", isRecording = false;
+    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
 
     function openEnvelope() {
       document.getElementById('envelopeOverlay').classList.add('opened');
