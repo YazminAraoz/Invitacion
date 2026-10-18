@@ -40,28 +40,28 @@
     #phenakistiscopeOverlay {
       position: fixed; inset: 0; z-index: 2000;
       width: 100vw; height: 100vh;
-      background: #060d17;
+      background: #000000;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       overflow: hidden; cursor: pointer;
       transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
     }
     #phenakistiscopeOverlay.zoom-out {
-      transform: scale(2.2);
+      transform: scale(2.5);
       opacity: 0;
     }
     #phenakistiscopeOverlay.hidden {
       opacity: 0; visibility: hidden; pointer-events: none;
     }
 
-    /* Vista Fenaquistiscopio */
+    /* Vista Fenaquistiscopio Gigante */
     .phena-stage {
       position: relative;
-      width: min(85vw, 480px);
-      height: min(85vw, 480px);
+      width: min(95vw, 95vh);
+      height: min(95vw, 95vh);
       display: flex; justify-content: center; align-items: center;
     }
 
-    /* Imagen del Fenaquistiscopio giratoria */
+    /* Imagen del Fenaquistiscopio Nítida y Gigante */
     .phena-wheel {
       width: 100%; height: 100%;
       border-radius: 50%;
@@ -70,37 +70,25 @@
       background-position: center;
       background-repeat: no-repeat;
       animation: spinPhenakistiscope 6s linear infinite;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(197, 160, 89, 0.3);
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+      filter: drop-shadow(0 0 25px rgba(0,0,0,0.9));
     }
 
-    /* Capa estroboscópica para simular la ilusión del movimiento continuo */
-    .phena-strobe {
-      position: absolute; inset: 0; border-radius: 50%;
-      background: repeating-conic-gradient(
-        from 0deg,
-        rgba(0,0,0,0.4) 0deg 3deg,
-        transparent 3deg 15deg
-      );
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Pin/Eje central estilo victoriano */
+    /* Pin/Eje central minimalista */
     .phena-pin {
-      position: absolute; width: 45px; height: 45px;
+      position: absolute; width: 35px; height: 35px;
       background: radial-gradient(circle, #E0C078 20%, #C5A059 70%, #0B1626 100%);
-      border-radius: 50%; border: 3px solid #0B1626;
-      box-shadow: 0 0 15px rgba(0,0,0,0.9);
+      border-radius: 50%; border: 2px solid #000000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.9);
       z-index: 5;
     }
 
     .phena-caption {
-      position: absolute; bottom: 40px;
+      position: absolute; bottom: 25px;
       font-family: var(--font-heading); font-size: 0.85rem;
       letter-spacing: 3px; color: var(--gold-light); text-transform: uppercase;
       text-shadow: 0 2px 6px rgba(0,0,0,0.9);
       animation: pulseText 1.8s ease-in-out infinite alternate;
+      z-index: 10;
     }
 
     @keyframes spinPhenakistiscope {
@@ -232,63 +220,4 @@
     .rec-btn.recording { background: #8a1c1c; color: #fff; }
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
     #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
-  </style>
-</head>
-<body>
-
-  <!-- 0. FENAQUISTISCOPIO A PANTALLA COMPLETA -->
-  <div id="phenakistiscopeOverlay" onclick="dismissPhenakistiscope()">
-    <div class="phena-stage">
-      <div class="phena-wheel" id="phenaWheel"></div>
-      <div class="phena-strobe"></div>
-      <div class="phena-pin"></div>
-    </div>
-    <div class="phena-caption">Toca la pantalla para comenzar</div>
-  </div>
-
-  <!-- 1. OVERLAY DEL SOBRE 3D -->
-  <div id="envelopeOverlay">
-    <div class="envelope-container" id="envelopeBox">
-      <div class="envelope-back"></div>
-      <div class="envelope-flap"></div>
-      
-      <div class="envelope-card-preview">
-        <p style="font-family: var(--font-heading); font-size: 0.75rem; letter-spacing: 2px; color: #4a121a; font-weight: bold; margin-bottom: 5px;">ESTÁS INVITADO A LA BODA DE</p>
-        <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--midnight); text-shadow: 0 1px 1px rgba(255,255,255,0.6);">Yazmín & Gonzalo</h3>
-      </div>
-
-      <div class="envelope-pocket"></div>
-      
-      <button class="wax-seal-btn" onclick="openEnvelope()">
-        <span>ABRIR</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- 2. INVITACIÓN Y FORMULARIO -->
-  <main id="mainInvitation">
-    
-    <section class="section-card">
-      <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
-      <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
-      <div class="event-date-large">4 DE SEPTIEMBRE DE 2027</div>
-      <div class="event-time">12:45 HS</div>
-      <div class="timer-grid">
-        <div class="timer-box"><span class="timer-num" id="dias">00</span><span class="timer-label">Días</span></div>
-        <div class="timer-box"><span class="timer-num" id="horas">00</span><span class="timer-label">Hs</span></div>
-        <div class="timer-box"><span class="timer-num" id="minutos">00</span><span class="timer-label">Min</span></div>
-        <div class="timer-box"><span class="timer-num" id="segundos">00</span><span class="timer-label">Seg</span></div>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
-      <p><strong>Los Cipreses 1</strong></p>
-      <p>25 de Mayo 1696, Min. Rivadavia, Alte. Brown, Burzaco, Argentina.</p>
-      <button class="btn-gothic" onclick="openMap()">VER EN GOOGLE MAPS</button><br>
-      <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
-    </section>
-
-    <section class="section-card">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
-      <form id="rsvpForm" onsubmit="handleRSVP(event)">
+  </style
