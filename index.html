@@ -184,8 +184,8 @@
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
     }
 
-    /* ESTILO BASE PARA TARJETAS CON FONDO PNG TRANSPARENTE */
-    .lace-card-bg {
+    /* ESTILO BASE PARA TARJETAS CON MARCO PNG/JPG COMPLETO SIN RECORTE */
+    .image-card-contain {
       background-color: transparent !important;
       background-size: contain !important;
       background-position: center !important;
@@ -199,29 +199,14 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 18% 14% 16% 14%;
+      padding: 16% 12%;
     }
-    .lace-card-bg::after { display: none; }
+    .image-card-contain::after { display: none; }
 
-    /* TARJETA 1: PRESENTACIÓN (`tarjeta.png`) */
-    .lace-card-1 {
-      background-image: url('tarjeta.png') !important;
-    }
-
-    /* TARJETA 2: DIRECCIÓN Y UBICACIÓN (`tarjetados.png`) */
-    .lace-card-2 {
-      background-image: url('tarjetados.png') !important;
-    }
-
-    /* TARJETA 3: DRESS CODE (`dresscode.jpg`) */
-    .dresscode-card-bg {
-      background-image: url('dresscode.jpg') !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
-      border: 1px solid var(--border-gold);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    }
+    /* ESPECIFICACIONES DE IMAGEN POR TARJETA */
+    .lace-card-1 { background-image: url('tarjeta.png') !important; }
+    .lace-card-2 { background-image: url('tarjetados.png') !important; }
+    .dresscode-card-bg { background-image: url('dresscode.jpg') !important; }
 
     .section-card::after {
       content: ''; position: absolute; inset: 8px;
@@ -345,7 +330,7 @@
   <main id="mainInvitation">
     
     <!-- Papel 1: PRESENTACIÓN & CONTADOR (`tarjeta.png`) -->
-    <section class="section-card lace-card-bg lace-card-1" style="--rot: -1deg;">
+    <section class="section-card image-card-contain lace-card-1" style="--rot: -1deg;">
       <div class="header-names ink-text">Yazmin <span class="header-ampersand">&</span> Gonzalo</div>
       <p class="storybook-quote ink-text">
         "Y la amaba con un amor que era más que el amor..."<br>
@@ -362,7 +347,7 @@
     </section>
 
     <!-- Papel 2: UBICACIÓN & FECHA (`tarjetados.png`) -->
-    <section class="section-card lace-card-bg lace-card-2" style="--rot: 1.5deg;">
+    <section class="section-card image-card-contain lace-card-2" style="--rot: 1.5deg;">
       <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 6px;" class="ink-text">UBICACIÓN & FECHA</h2>
       <p class="ink-text"><strong>Los Cipreses 1</strong></p>
       <p class="ink-text" style="font-size: 0.85rem; margin-bottom: 6px; line-height: 1.3;">
@@ -374,27 +359,27 @@
     </section>
 
     <!-- Papel 3: Dress Code (`dresscode.jpg`) -->
-    <section class="section-card dresscode-card-bg" style="--rot: -0.8deg;">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;" class="ink-text">DRESS CODE</h2>
-      <p style="font-size: 1.2rem; font-family: var(--font-heading); color: var(--midnight-light); letter-spacing: 1px;" class="ink-text">Elegante</p>
+    <section class="section-card image-card-contain dresscode-card-bg" style="--rot: -0.8deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 10px;" class="ink-text">DRESS CODE</h2>
+      <p style="font-size: 1.2rem; font-family: var(--font-heading); letter-spacing: 1px;" class="ink-text">Elegante</p>
     </section>
 
-    <!-- Papel 4: Regalos / Buzón -->
-    <section class="section-card" style="--rot: 1deg;">
-      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
-      <p style="margin-bottom: 10px;">Debido a que no podemos llevarnos objetos pesados, el día del evento contaremos con un <strong>buzón físico para sobres</strong>.</p>
-      <p style="margin-bottom: 15px;">Si prefieres hacernos una atención de manera virtual:</p>
-      <div style="background: rgba(255,255,255,0.6); border: 1px dashed var(--gold); padding: 12px; border-radius: 4px; display:inline-block; width:100%; max-width:320px;">
-        <p style="font-size: 0.9rem;"><strong>CBU / CVU:</strong> <span id="cbuText">0000003100000000000000</span></p>
-        <p style="font-size: 0.9rem;"><strong>Alias:</strong> <span id="aliasText">boda.yazmin.gonzalo</span></p>
+    <!-- Papel 4: Regalos / Buzón (`dresscode.jpg`) -->
+    <section class="section-card image-card-contain dresscode-card-bg" style="--rot: 1deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 6px;" class="ink-text">REGALOS</h2>
+      <p style="margin-bottom: 8px; font-size:0.85rem;" class="ink-text">Contaremos con un <strong>buzón físico para sobres</strong> el día del evento.</p>
+      <p style="margin-bottom: 10px; font-size:0.85rem;" class="ink-text">Atención virtual:</p>
+      <div style="background: rgba(255,255,255,0.7); border: 1px dashed var(--gold); padding: 8px; border-radius: 4px; display:inline-block; width:100%; max-width:280px;">
+        <p style="font-size: 0.8rem;" class="ink-text"><strong>CBU / CVU:</strong> <span id="cbuText">0000003100000000000000</span></p>
+        <p style="font-size: 0.8rem;" class="ink-text"><strong>Alias:</strong> <span id="aliasText">boda.yazmin.gonzalo</span></p>
         <button class="btn-copy" onclick="copyBankInfo()">📋 Copiar Datos Bancarios</button>
       </div>
     </section>
 
-    <!-- Papel 5: Confirmación de Asistencia -->
-    <section class="section-card foldable-form-card" style="--rot: -0.5deg;">
-      <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
-      <p style="margin-bottom: 20px; font-style: italic;">Por favor, despliega el sobre oficial para registrar tu respuesta.</p>
+    <!-- Papel 5: Confirmación de Asistencia (`dresscode.jpg`) -->
+    <section class="section-card image-card-contain dresscode-card-bg foldable-form-card" style="--rot: -0.5deg;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 10px;" class="ink-text">CONFIRMAR ASISTENCIA</h2>
+      <p style="margin-bottom: 15px; font-style: italic; font-size:0.9rem;" class="ink-text">Despliega el sobre oficial para registrar tu respuesta.</p>
       <button class="btn-gothic" onclick="openRSVPEnvelope()">ABRIR SOBRE DE RSVP</button>
     </section>
 
