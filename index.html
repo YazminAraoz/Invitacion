@@ -221,7 +221,7 @@
           <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
         </div>
 
-        <!-- Grabador de Audio -->
+        <!-- Grabador de Audio compatible con móviles -->
         <div class="form-group">
           <label>Audio para los novios (Máx. 120s)</label>
           <div class="audio-recorder-box">
@@ -239,12 +239,11 @@
   </main>
 
   <script>
-    // URL actualizada con tu nuevo Deployment ID
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsOoDsz61KU05XCf0SeG7vJ2Blzjt_8opAFTcfKZyA5rFdZpsPG8pcB3khW8iM2nFvaw/exec";
     const WHATSAPP_PHONE = "353892564030";
 
     let audioCtx = null, isPlaying = false, soundInterval = null;
-    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false, recordingTimer = null;
+    let mediaRecorder = null, audioChunks = [], audioBase64Data = null, audioFileExt = "webm", isRecording = false, recordingTimer = null;
 
     function openEnvelope() {
       document.getElementById('envelopeOverlay').classList.add('opened');
@@ -309,7 +308,7 @@
     function addToCalendar() { window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Yazmin+y+Gonzalo&dates=20270904T154500Z/20270904T210000Z&details=Nos+casamos!&location=25+de+Mayo+1696,+Burzaco", '_blank'); }
     function copyAlias() { navigator.clipboard.writeText("YAZMIN.GONZALO.BODA"); alert("¡Alias copiado!"); }
 
-    // Grabación de Audio
+    // Grabación de Audio adaptada para móviles (iOS / Android / PC)
     async function toggleRecording() {
       const btn = document.getElementById('recordBtn');
       const status = document.getElementById('recStatus');
@@ -317,12 +316,25 @@
       if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
+          
+          // Detección automática del formato soportado por el dispositivo móvil
+          let mimeType = 'audio/webm';
+          audioFileExt = 'webm';
+          
+          if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            mimeType = 'audio/mp4'; // Ideal para iOS / Safari
+            audioFileExt = 'm4a';
+          } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+            mimeType = 'audio/webm;codecs=opus';
+            audioFileExt = 'webm';
+          }
+
+          mediaRecorder = new MediaRecorder(stream, { mimeType });
           audioChunks = [];
 
           mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
           mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioBlob = new Blob(audioChunks, { type: mimeType });
             const reader = new FileReader();
             reader.readAsDataURL(audioBlob);
             reader.onloadend = () => {
@@ -342,7 +354,7 @@
             if (isRecording) toggleRecording();
           }, 120000);
         } catch (err) {
-          alert("Error: Permiso de micrófono denegado o no compatible.");
+          alert("Error: No se pudo acceder al micrófono. Verifica los permisos de tu navegador.");
         }
       } else {
         clearTimeout(recordingTimer);
@@ -372,7 +384,7 @@
       const now = new Date();
       const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
       const safeNameSlug = name.replace(/[^a-zA-Z0-9]/g, '_');
-      const audioFileName = `2027-09-04_${safeNameSlug}_${now.toISOString().replace(/[:.]/g, '-')}.webm`;
+      const audioFileName = `2027-09-04_${safeNameSlug}_${now.toISOString().replace(/[:.]/g, '-')}.${audioFileExt}`;
 
       const payload = {
         Fecha: formattedDate,
@@ -401,7 +413,7 @@
         }
       } catch (err) {
         statusDiv.style.color = "red";
-        statusDiv.textContent = "Error de conexión con Google Apps Script. Verificá que la implementación sea pública.";
+        statusDiv.textContent = "Error de conexión con Google Apps Script.";
       }
 
       // Abrir WhatsApp para notificar a los novios
