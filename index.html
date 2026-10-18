@@ -34,6 +34,8 @@
       position: relative;
     }
     body.envelope-open { overflow-y: auto; }
+
+    /* Control de Música Flotante */
     .audio-control {
       position: fixed; top: 15px; right: 15px; z-index: 999;
       background: var(--midnight); border: 1px solid var(--gold);
@@ -42,31 +44,65 @@
       cursor: pointer; display: flex; align-items: center; gap: 8px;
       box-shadow: 0 4px 12px rgba(11, 22, 38, 0.2);
     }
+
+    /* PANTALLA 1: SOBRE ANTIGUO */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-color: var(--midnight);
-      background-image: radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.8) 0%, rgba(11, 22, 38, 1) 80%);
+      background-image: radial-gradient(circle at 50% 30%, rgba(24, 43, 69, 0.9) 0%, rgba(11, 22, 38, 1) 80%);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 20px; transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+      padding: 20px; transition: opacity 1.2s ease-in-out, visibility 1.2s ease-in-out;
+      perspective: 1000px;
     }
     #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; display: none !important; }
-    .envelope-wrapper {
-      width: 100%; max-width: 380px; background: var(--bg-cream);
-      border: 2px solid var(--gold); padding: 30px 20px; border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); text-align: center; position: relative;
+
+    .old-envelope {
+      width: 100%; max-width: 380px;
+      background: #F4EEDD;
+      border: 2px solid var(--gold);
+      padding: 40px 20px 30px 20px;
+      border-radius: 4px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      position: relative;
+      background-image: radial-gradient(rgba(197, 160, 89, 0.15) 1px, transparent 0);
+      background-size: 16px 16px;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease;
     }
-    .celestial-svg { width: 110px; height: 110px; margin: 0 auto 15px auto; display: block; }
-    .envelope-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--midnight); margin-bottom: 5px; }
-    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 25px; }
+
+    /* Solapa del sobre */
+    .envelope-flap {
+      position: absolute; top: 0; left: 0; right: 0; height: 110px;
+      background: #EADFB8;
+      border-bottom: 2px solid var(--gold);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+    }
+
+    .old-envelope.unfolding .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .celestial-svg { width: 90px; height: 90px; margin: 15px auto 10px auto; display: block; position: relative; z-index: 5; }
+    .envelope-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--midnight); margin-bottom: 5px; position: relative; z-index: 5; }
+    .envelope-subtitle { font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; position: relative; z-index: 5; }
+
+    /* Sello de Cera */
     .wax-seal-btn {
       background: var(--midnight); border: 2px solid var(--gold); color: var(--gold-light);
-      width: 75px; height: 75px; border-radius: 50%; margin: 0 auto; cursor: pointer;
+      width: 75px; height: 75px; border-radius: 50%; margin: 10px auto 0 auto; cursor: pointer;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.4); transition: transform 0.3s ease;
+      box-shadow: 0 4px 15px rgba(11, 22, 38, 0.5); transition: transform 0.3s ease, background 0.3s ease;
+      position: relative; z-index: 15;
     }
-    .wax-seal-btn:hover { transform: scale(1.08); }
+    .wax-seal-btn:hover { transform: scale(1.08); background: var(--midnight-light); }
     .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; }
 
+    /* PANTALLA 2: CONTENIDO PRINCIPAL */
     #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
     #mainInvitation.visible { display: block; animation: fadeInContent 1.2s ease-out forwards; }
     @keyframes fadeInContent { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -100,11 +136,14 @@
     .btn-secondary { background: transparent; color: var(--midnight); border: 1px solid var(--midnight); margin-top: 10px; }
     .btn-secondary:hover { background: var(--midnight); color: var(--gold); }
 
+    /* Estilos del Formulario */
     .form-group { text-align: left; margin-bottom: 20px; }
     .form-group label { display: block; font-family: var(--font-heading); font-size: 0.8rem; letter-spacing: 1px; color: var(--midnight); margin-bottom: 6px; text-transform: uppercase; }
     .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-gold); background: var(--bg-cream); font-family: var(--font-body); font-size: 1rem; color: var(--midnight); border-radius: 2px; outline: none; }
     .phone-row { display: flex; gap: 8px; }
     .phone-row select { width: 110px; }
+
+    .guest-name-field { margin-top: 8px; }
 
     .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
     .rec-btn { background: var(--midnight); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: var(--font-heading); }
@@ -123,9 +162,10 @@
     <span id="audioIcon">🎵</span> <span id="audioText">Música</span>
   </button>
 
-  <!-- PANTALLA 1: SOBRE -->
+  <!-- PANTALLA 1: SOBRE ANTIGUO -->
   <div id="envelopeOverlay">
-    <div class="envelope-wrapper">
+    <div class="old-envelope" id="envelopeCard">
+      <div class="envelope-flap" id="envelopeFlap"></div>
       <svg class="celestial-svg" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="45" fill="none" stroke="#C5A059" stroke-width="1.5" />
         <path d="M 50 10 A 40 40 0 0 1 50 90 A 25 25 0 0 0 50 10" fill="#0B1626" stroke="#C5A059" stroke-width="1" />
@@ -143,7 +183,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA 2: CONTENIDO -->
+  <!-- PANTALLA 2: INVITACIÓN -->
   <main id="mainInvitation">
     <section class="section-card">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
@@ -172,9 +212,10 @@
       <p style="font-family: var(--font-heading); letter-spacing: 2px; color: var(--gold); text-transform: uppercase;">Formal Gala</p>
     </section>
 
+    <!-- SECCIÓN DE REGALOS ACTUALIZADA -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">REGALOS</h2>
-      <p style="font-size: 0.95rem;">Su presencia es nuestro mayor regalo. Si desean realizarnos un obsequio digital:</p>
+      <p style="font-size: 0.95rem;">Su presencia es nuestro mayor regalo. No podemos llevar nada muy pesado en el viaje, pero habrá un buzón para dejar sobres en el salón. Si lo prefieren, también pueden realizar un obsequio digital:</p>
       <div class="gift-box">
         <p><strong>Alias:</strong> <span class="gift-code">YAZMIN.GONZALO.BODA</span></p>
         <p><strong>CBU:</strong> <span class="gift-code">0000003100012345678901</span></p>
@@ -182,6 +223,7 @@
       </div>
     </section>
 
+    <!-- FORMULARIO RSVP -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
@@ -189,6 +231,7 @@
           <label for="fullName">Nombre y Apellido *</label>
           <input type="text" id="fullName" class="form-control" required placeholder="Ej: Yazmín Pérez">
         </div>
+
         <div class="form-group">
           <label for="attending">¿Asistirás? *</label>
           <select id="attending" class="form-control" required>
@@ -196,10 +239,21 @@
             <option value="No">Lamentablemente no podré asistir</option>
           </select>
         </div>
+
+        <!-- ACOMPAÑANTES Y SUS NOMBRES (MÁXIMO 5) -->
         <div class="form-group">
-          <label for="guests">Cantidad de acompañantes</label>
-          <input type="number" id="guests" class="form-control" min="0" max="10" value="0">
+          <label for="guests">Cantidad de acompañantes (Máx. 5)</label>
+          <select id="guests" class="form-control" onchange="updateGuestFields()">
+            <option value="0" selected>0 (Solo yo)</option>
+            <option value="1">1 Acompañante</option>
+            <option value="2">2 Acompañantes</option>
+            <option value="3">3 Acompañantes</option>
+            <option value="4">4 Acompañantes</option>
+            <option value="5">5 Acompañantes</option>
+          </select>
+          <div id="guestNamesContainer"></div>
         </div>
+
         <div class="form-group">
           <label>Teléfono de Contacto *</label>
           <div class="phone-row">
@@ -212,16 +266,24 @@
             <input type="tel" id="phoneNumber" class="form-control" required placeholder="1112345678">
           </div>
         </div>
+
         <div class="form-group">
           <label for="dietary">Restricciones Alimentarias</label>
-          <input type="text" id="dietary" class="form-control" placeholder="Vegetariano, celíaco...">
+          <input type="text" id="dietary" class="form-control" placeholder="Vegetariano, celíaco, alergias...">
         </div>
+
+        <!-- SUGERENCIA DE MÚSICA -->
+        <div class="form-group">
+          <label for="musicLink">Sugerencia de Música / Canción (Link)</label>
+          <input type="url" id="musicLink" class="form-control" placeholder="Ej: https://open.spotify.com/track/... o nombre del tema">
+        </div>
+
         <div class="form-group">
           <label for="comments">Comentarios o Mensaje</label>
           <textarea id="comments" class="form-control" rows="3" placeholder="Déjale una nota a los novios..."></textarea>
         </div>
 
-        <!-- Grabador de Audio compatible con móviles -->
+        <!-- GRABADOR DE AUDIO -->
         <div class="form-group">
           <label>Audio para los novios (Máx. 120s)</label>
           <div class="audio-recorder-box">
@@ -246,11 +308,15 @@
     let mediaRecorder = null, audioChunks = [], audioBase64Data = null, audioFileExt = "webm", isRecording = false, recordingTimer = null;
 
     function openEnvelope() {
-      document.getElementById('envelopeOverlay').classList.add('opened');
-      document.getElementById('mainInvitation').classList.add('visible');
-      document.body.classList.add('envelope-open');
-      initAudio();
-      startCountdown();
+      const card = document.getElementById('envelopeCard');
+      card.classList.add('unfolding');
+      setTimeout(() => {
+        document.getElementById('envelopeOverlay').classList.add('opened');
+        document.getElementById('mainInvitation').classList.add('visible');
+        document.body.classList.add('envelope-open');
+        initAudio();
+        startCountdown();
+      }, 700);
     }
 
     function initAudio() {
@@ -308,7 +374,22 @@
     function addToCalendar() { window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Yazmin+y+Gonzalo&dates=20270904T154500Z/20270904T210000Z&details=Nos+casamos!&location=25+de+Mayo+1696,+Burzaco", '_blank'); }
     function copyAlias() { navigator.clipboard.writeText("YAZMIN.GONZALO.BODA"); alert("¡Alias copiado!"); }
 
-    // Grabación de Audio adaptada para móviles (iOS / Android / PC)
+    // Generar dinámicamente campos para nombres de acompañantes
+    function updateGuestFields() {
+      const count = parseInt(document.getElementById('guests').value);
+      const container = document.getElementById('guestNamesContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= count; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control guest-name-field';
+        input.placeholder = `Nombre del Acompañante ${i}`;
+        input.required = true;
+        container.appendChild(input);
+      }
+    }
+
+    // Grabación de Audio
     async function toggleRecording() {
       const btn = document.getElementById('recordBtn');
       const status = document.getElementById('recStatus');
@@ -316,13 +397,11 @@
       if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          
-          // Detección automática del formato soportado por el dispositivo móvil
           let mimeType = 'audio/webm';
           audioFileExt = 'webm';
           
           if (MediaRecorder.isTypeSupported('audio/mp4')) {
-            mimeType = 'audio/mp4'; // Ideal para iOS / Safari
+            mimeType = 'audio/mp4';
             audioFileExt = 'm4a';
           } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
             mimeType = 'audio/webm;codecs=opus';
@@ -354,7 +433,7 @@
             if (isRecording) toggleRecording();
           }, 120000);
         } catch (err) {
-          alert("Error: No se pudo acceder al micrófono. Verifica los permisos de tu navegador.");
+          alert("Error: No se pudo acceder al micrófono.");
         }
       } else {
         clearTimeout(recordingTimer);
@@ -367,7 +446,7 @@
       }
     }
 
-    // Envío y Sincronización
+    // Envío del Formulario
     async function handleRSVP(event) {
       event.preventDefault();
       const statusDiv = document.getElementById('statusMessage');
@@ -376,23 +455,43 @@
 
       const name = document.getElementById('fullName').value.trim();
       const attending = document.getElementById('attending').value;
-      const guests = document.getElementById('guests').value;
+      const guestsCount = document.getElementById('guests').value;
       const phone = `+${document.getElementById('countryCode').value}${document.getElementById('phoneNumber').value.trim()}`;
       const dietary = document.getElementById('dietary').value.trim() || "Ninguna";
-      const comments = document.getElementById('comments').value.trim();
+      const musicLink = document.getElementById('musicLink').value.trim();
+      const commentsInput = document.getElementById('comments').value.trim();
+
+      // Recopilar nombres de acompañantes
+      const guestInputs = document.querySelectorAll('.guest-name-field');
+      let guestNames = [];
+      guestInputs.forEach(input => {
+        if (input.value.trim()) guestNames.push(input.value.trim());
+      });
+
+      // Formatear Comentarios integrando sugerencia de música
+      let fullComments = commentsInput;
+      if (musicLink) {
+        fullComments = fullComments ? `${fullComments} | Música: ${musicLink}` : `Música: ${musicLink}`;
+      }
 
       const now = new Date();
       const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
       const safeNameSlug = name.replace(/[^a-zA-Z0-9]/g, '_');
       const audioFileName = `2027-09-04_${safeNameSlug}_${now.toISOString().replace(/[:.]/g, '-')}.${audioFileExt}`;
 
+      // Payload configurado con tus celdas exactas para Excel:
+      // Telefono -> teléfono de contacto
+      // Comentarios -> comentarios o mensaje (con música si aplica)
+      // Audio -> nombre del archivo guardado en Drive
       const payload = {
         Fecha: formattedDate,
         Nombre: name,
         Asistencia: attending,
-        Acompañantes: guests,
+        Acompañantes: guestsCount > 0 ? `${guestsCount} (${guestNames.join(', ')})` : "0",
+        Telefono: phone,
         Restricciones: dietary,
-        Comentarios: comments ? `${comments} (Tel: ${phone})` : `Tel: ${phone}`,
+        Comentarios: fullComments,
+        Audio: audioBase64Data ? audioFileName : "Sin audio",
         audioBase64: audioBase64Data || "",
         audioFileName: audioBase64Data ? audioFileName : ""
       };
@@ -406,21 +505,25 @@
         
         if (result.result === "success") {
           statusDiv.style.color = "green";
-          statusDiv.textContent = "¡Confirmación guardada y audio almacenado en Drive con éxito!";
+          statusDiv.textContent = "¡Confirmación guardada con éxito!";
         } else {
           statusDiv.style.color = "orange";
-          statusDiv.textContent = "Confirmación registrada, pero hubo un detalle con el audio: " + (result.error || "Desconocido");
+          statusDiv.textContent = "Confirmación registrada, pero hubo un detalle: " + (result.error || "Desconocido");
         }
       } catch (err) {
         statusDiv.style.color = "red";
         statusDiv.textContent = "Error de conexión con Google Apps Script.";
       }
 
-      // Abrir WhatsApp para notificar a los novios
+      // Generar mensaje para WhatsApp
       setTimeout(() => {
-        let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guests}\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
-        if (comments) msg += `\n*Comentarios:* ${comments}`;
+        let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
+        if (guestNames.length > 0) msg += ` (${guestNames.join(', ')})`;
+        msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
+        if (musicLink) msg += `\n*Música sugerida:* ${musicLink}`;
+        if (commentsInput) msg += `\n*Comentarios:* ${commentsInput}`;
         if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
+        
         window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
       }, 1500);
     }
