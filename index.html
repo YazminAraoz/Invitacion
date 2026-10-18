@@ -34,7 +34,7 @@
     }
     body.envelope-open { overflow-y: auto; }
 
-    /* Intro / Sobre Estetico Steampunk con Transiciones Suaves */
+    /* Intro / Sobre Steampunk */
     #envelopeOverlay {
       position: fixed; inset: 0; z-index: 1000;
       background-color: var(--midnight);
@@ -44,9 +44,7 @@
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       padding: 20px; transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #envelopeOverlay.opened {
-      opacity: 0; visibility: hidden; pointer-events: none;
-    }
+    #envelopeOverlay.opened { opacity: 0; visibility: hidden; pointer-events: none; }
 
     .old-envelope {
       width: 100%; max-width: 400px;
@@ -60,16 +58,11 @@
       transform: scale(1);
       transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s ease;
     }
-    #envelopeOverlay.opened .old-envelope {
-      transform: scale(1.15) translateY(-30px);
-      opacity: 0;
-    }
+    #envelopeOverlay.opened .old-envelope { transform: scale(1.15) translateY(-30px); opacity: 0; }
 
     .old-envelope::before {
-      content: '';
-      position: absolute; inset: 6px;
-      border: 1px dashed rgba(197, 160, 89, 0.6);
-      pointer-events: none;
+      content: ''; position: absolute; inset: 6px;
+      border: 1px dashed rgba(197, 160, 89, 0.6); pointer-events: none;
     }
 
     .steampunk-gears {
@@ -92,20 +85,25 @@
     .wax-seal-btn:hover { transform: scale(1.12); background: #5a1721; box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4); }
     .wax-seal-btn span { font-family: var(--font-heading); font-size: 0.65rem; letter-spacing: 1px; margin-top: 2px; font-weight: bold; }
 
-    /* Contenido Principal con Animaciones de Entrada */
-    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; opacity: 0; transform: translateY(30px); transition: opacity 1.2s ease, transform 1.2s ease; }
-    #mainInvitation.visible { display: block; opacity: 1; transform: translateY(0); }
+    /* Contenedor Principal */
+    #mainInvitation { max-width: 680px; margin: 0 auto; padding: 40px 20px; display: none; }
+    #mainInvitation.visible { display: block; }
 
+    /* Tarjetas que van apareciendo escalonadamente */
     .section-card {
       background: #FFFFFF; border: 1px solid var(--border-gold);
       padding: 30px 20px; margin-bottom: 35px; border-radius: 4px; text-align: center; position: relative;
       box-shadow: 0 4px 20px rgba(11, 22, 38, 0.04);
+      opacity: 0; transform: translateY(30px);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .section-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(197, 160, 89, 0.15);
+    .section-card.reveal {
+      animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(197, 160, 89, 0.15); }
     .section-card::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(197, 160, 89, 0.2); pointer-events: none; }
 
     .header-names { font-family: var(--font-display); font-size: 2.2rem; color: var(--midnight); line-height: 1.2; margin-bottom: 10px; }
@@ -139,10 +137,7 @@
     .phone-row { display: flex; gap: 8px; }
     .phone-row select { width: 110px; }
     
-    .guest-name-field {
-      margin-top: 8px;
-      animation: fadeInField 0.4s ease forwards;
-    }
+    .guest-name-field { margin-top: 8px; animation: fadeInField 0.4s ease forwards; }
     @keyframes fadeInField { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
     .audio-recorder-box { background: var(--bg-cream); border: 1px dashed var(--gold); padding: 15px; border-radius: 4px; margin-top: 10px; text-align: center; }
@@ -152,12 +147,12 @@
     @keyframes pulseRec { 0% { box-shadow: 0 0 0 0 rgba(138, 28, 28, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(138, 28, 28, 0); } 100% { box-shadow: 0 0 0 0 rgba(138, 28, 28, 0); } }
 
     .notice-info { font-size: 0.8rem; color: var(--midnight-light); margin-top: 12px; font-style: italic; }
-    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; transition: all 0.3s ease; }
+    #statusMessage { margin-top: 15px; font-weight: 600; font-size: 0.9rem; text-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- Intro / Sobre Steampunk con animaciones de engranajes -->
+  <!-- Sobre Inicial Steampunk -->
   <div id="envelopeOverlay">
     <div class="old-envelope">
       <div class="steampunk-gears">⚙ ⚜ ⚙</div>
@@ -178,7 +173,10 @@
     </div>
   </div>
 
+  <!-- Contenido con Tarjetas en Cascada -->
   <main id="mainInvitation">
+    
+    <!-- Tarjeta 1: Presentación y Cita de Poe -->
     <section class="section-card">
       <div class="header-names">Yazmín <span class="header-ampersand">y</span> Gonzalo</div>
       <p class="storybook-quote">"Y la amaba con un amor que era más que el amor..." <br><span style="font-size:0.9rem; letter-spacing:1px; color:var(--gold);">— Edgar Allan Poe (Anabel Lee)</span></p>
@@ -192,6 +190,7 @@
       </div>
     </section>
 
+    <!-- Tarjeta 2: Ubicación -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 10px;">UBICACIÓN & FECHA</h2>
       <p><strong>Los Cipreses 1</strong></p>
@@ -200,6 +199,7 @@
       <button class="btn-gothic btn-secondary" onclick="addToCalendar()">AGREGAR AL CALENDARIO</button>
     </section>
 
+    <!-- Tarjeta 3: Formulario de Asistencia -->
     <section class="section-card">
       <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: var(--midnight); margin-bottom: 15px;">CONFIRMAR ASISTENCIA</h2>
       <form id="rsvpForm" onsubmit="handleRSVP(event)">
@@ -288,6 +288,15 @@
       setTimeout(() => {
         invitation.classList.add('visible');
         document.body.classList.add('envelope-open');
+        
+        // Revelar las tarjetas escalonadamente una por una
+        const cards = document.querySelectorAll('.section-card');
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('reveal');
+          }, index * 250); // Retardo escalonado de 250ms entre tarjeta y tarjeta
+        });
+
         startCountdown();
       }, 500);
     }
