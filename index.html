@@ -582,9 +582,13 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-gothic">CONFIRMAR & ENVIAR</button>
+        <button type="submit" id="submitRSVPBtn" class="btn-gothic">CONFIRMAR ASISTENCIA</button>
         <div id="statusMessage"></div>
-        <p class="notice-info">Al enviar, tus datos quedarán registrados y se abrirá WhatsApp para notificar a los novios.</p>
+        <div id="postConfirmActions" style="display:none; text-align:center; margin-top:12px;">
+          <p class="notice-info">Tu asistencia quedó registrada. Primero descargá tu pase en PDF y después continuá a WhatsApp.</p>
+          <button type="button" class="btn-gothic" onclick="downloadInvitationPDF()">DESCARGAR INVITACIÓN EN PDF</button>
+          <button type="button" class="btn-gothic btn-secondary" onclick="continueToWhatsApp()">CONTINUAR A WHATSAPP</button>
+        </div>
       </form>
     </div>
   </div>
@@ -600,7 +604,9 @@
       <p style="font-size: 1.05rem; color: #120E0C;">Los Cipreses 1<br>25 de Mayo 1696, Min. Rivadavia, Burzaco</p>
     </div>
     <p style="font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 1px; color: #120E0C;">DRESS CODE: ELEGANTE</p>
-    <p style="font-size: 0.75rem; color: #5a4533; margin-top: 25px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
+    <p style="font-family: var(--font-heading); font-size: 0.9rem; color: #120E0C; margin-top: 18px;">CÓDIGO ÚNICO DE INVITACIÓN</p>
+    <p id="ticketInviteCode" style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; color: #4a121a; margin-top: 4px;">---</p>
+    <p style="font-size: 0.75rem; color: #5a4533; margin-top: 18px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
   </div>
 
   <script>
@@ -763,11 +769,25 @@
       }
     }
 
+    let confirmedRSVP = null;
+
+    function generateInvitationCode() {
+      const randomPart = (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()
+        : (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)).toUpperCase();
+      return `YG-${randomPart}`;
+    }
+
     async function handleRSVP(event) {
       event.preventDefault();
       const statusDiv = document.getElementById('statusMessage');
+      const submitBtn = document.getElementById('submitRSVPBtn');
+      if (confirmedRSVP) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "REGISTRANDO...";
       statusDiv.style.color = "var(--midnight)";
-      statusDiv.textContent = "Registrando confirmación y generando pase...";
+      statusDiv.textContent = "Registrando confirmación...";
 
       const name = document.getElementById('fullName').value.trim();
       const attending = document.getElementById('attending').value;
@@ -778,13 +798,16 @@
       const commentsInput = document.getElementById('comments').value.trim() || "-";
 
       const guestInputs = document.querySelectorAll('.guest-name-field');
-      let guestNames = [];
+      const guestNames = [];
       guestInputs.forEach(input => { if (input.value.trim()) guestNames.push(input.value.trim()); });
       const formattedGuestNames = guestNames.length > 0 ? guestNames.join(', ') : "-";
+      const invitationCode = generateInvitationCode();
+      document.getElementById('ticketInviteCode').textContent = invitationCode;
 
       const now = new Date();
       const payload = {
         Fecha: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`,
+        CodigoInvitacion: invitationCode,
         Nombre: name,
         Asistencia: attending,
         Acompañantes: guestsCount,
@@ -808,20 +831,37 @@
         console.error("Error enviando a Google Sheets:", err);
       }
 
-      // 1. DESCARGAR / IMPRIMIR EL PASE AUTOMÁTICAMENTE
+      confirmedRSVP = {
+        name, attending, guestsCount, phone, dietary, musicLink,
+        commentsInput, formattedGuestNames, guestNames, audioBase64Data,
+        invitationCode
+      };
+      statusDiv.textContent = "Confirmación registrada. Descargá tu invitación en PDF antes de continuar a WhatsApp.";
+      document.getElementById('postConfirmActions').style.display = 'block';
+      submitBtn.style.display = 'none';
+    }
+
+    function downloadInvitationPDF() {
+      if (!confirmedRSVP) {
+        alert("Primero confirmá tu asistencia.");
+        return;
+      }
       window.print();
+    }
 
-      // 2. ABRIR WHATSAPP CON LOS DATOS DE LOS NOVIOS
-      let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Nombre:* ${name}\n*¿Asiste?:* ${attending}\n*Acompañantes:* ${guestsCount}`;
-      if (guestNames.length > 0) msg += ` (${formattedGuestNames})`;
-      msg += `\n*Teléfono:* ${phone}\n*Restricciones:* ${dietary}`;
-      if (musicLink !== "-") msg += `\n*Música sugerida:* ${musicLink}`;
-      if (commentsInput !== "-") msg += `\n*Comentarios:* ${commentsInput}`;
-      if (audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
-
-      setTimeout(() => {
-        window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-      }, 1000);
+    function continueToWhatsApp() {
+      if (!confirmedRSVP) {
+        alert("Primero confirmá tu asistencia.");
+        return;
+      }
+      const r = confirmedRSVP;
+      let msg = `*CONFIRMACIÓN DE ASISTENCIA*\n*Código de invitación:* ${r.invitationCode}\n*Nombre:* ${r.name}\n*¿Asiste?:* ${r.attending}\n*Acompañantes:* ${r.guestsCount}`;
+      if (r.guestNames.length > 0) msg += ` (${r.formattedGuestNames})`;
+      msg += `\n*Teléfono:* ${r.phone}\n*Restricciones:* ${r.dietary}`;
+      if (r.musicLink !== "-") msg += `\n*Música sugerida:* ${r.musicLink}`;
+      if (r.commentsInput !== "-") msg += `\n*Comentarios:* ${r.commentsInput}`;
+      if (r.audioBase64Data) msg += `\n*(Audio adjuntado en la nube)*`;
+      window.location.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
     }
   </script>
 </body>
