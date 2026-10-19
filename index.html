@@ -385,9 +385,14 @@
     }
     #printableTicket {
       display: none;
-      width: 480px; height: 650px; padding: 40px; text-align: center;
-      background-image: url('dresscode2.jpg'); background-size: cover; background-position: center;
-      border: 2px solid #C5A059; box-shadow: 0 0 20px rgba(0,0,0,0.5); border-radius: 6px;
+      width: min(480px, 100%); min-height: 560px; height: auto; box-sizing: border-box;
+      padding: 32px 24px; margin: 18px auto; text-align: center;
+      background-color: #f7efe0; background-image: url('dresscode2.jpg'); background-size: cover; background-position: center;
+      border: 2px solid #C5A059; box-shadow: 0 0 20px rgba(0,0,0,0.18); border-radius: 6px;
+    }
+    @media screen and (max-width: 520px) {
+      #printableTicket { min-height: 0; padding: 24px 14px; }
+      #printableTicket h1 { font-size: 1.45rem !important; }
     }
   </style>
 </head>
@@ -839,6 +844,11 @@
       statusDiv.textContent = "Confirmación registrada. Descargá tu invitación en PDF antes de continuar a WhatsApp.";
       document.getElementById('postConfirmActions').style.display = 'block';
       submitBtn.style.display = 'none';
+      document.getElementById('printableTicket').style.display = 'block';
+      const modalCard = document.querySelector('#rsvpEnvelopeModal .section-card');
+      if (modalCard && document.getElementById('printableTicket').parentElement !== modalCard) {
+        modalCard.appendChild(document.getElementById('printableTicket'));
+      }
     }
 
     function downloadInvitationPDF() {
