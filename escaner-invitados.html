@@ -62,10 +62,11 @@ label{display:block;margin:8px 0 4px;opacity:.85}
   <section id="scan" class="hide" style="display:flex;flex-direction:column;gap:14px">
     <div class="view"><video id="vid" playsinline muted></video><div class="frame"></div></div>
     <p class="msg" id="hint">Apuntá la cámara al QR del pase.</p>
-    <div class="row"><button onclick="startCam()">ACTIVAR CÁMARA</button><button onclick="$('photo').click()">LEER DESDE FOTO</button></div>
+    <div class="row"><button onclick="startCam()">ACTIVAR CÁMARA</button><button id="photoBtn" onclick="$('photo').click()">LEER DESDE FOTO</button></div>
     <input id="photo" type="file" accept="image/*" capture="environment" class="hide" onchange="readPhoto(this)">
-    <div class="row"><input id="manual" placeholder="Código manual (YG-XXXXXXXXXX)" autocapitalize="characters" onkeydown="if(event.key==='Enter')lookup(this.value)"><button onclick="lookup(manual.value)">BUSCAR</button></div>
+    <div class="row"><input id="manual" placeholder="Código manual (YG-XXXXXXXXXX)" autocapitalize="characters" onkeydown="if(event.key==='Enter')handleQR(this.value)"><button onclick="handleQR(manual.value)">BUSCAR</button></div>
     <p class="diag" id="diag"></p>
+    <p class="diag" id="diag2"></p>
     <div class="tools">
       <button onclick="exportLog()">EXCEL: INGRESOS</button>
       <button onclick="exportAll()">EXCEL: LISTA Y MESAS</button>
@@ -129,15 +130,41 @@ async function api(params, body){
   return (await fetch(u)).json();
 }
 
+const VERSION = 'v3';
+function whyNoCam(){
+  const ua = navigator.userAgent;
+  if (window.isSecureContext === false) return 'La página no está en una conexión segura (HTTPS).';
+  if (window.top !== window.self) return 'La página está incrustada dentro de otra (iframe/embed) y el navegador bloquea la cámara. Abrí el enlace del escáner directo, en su propia pestaña.';
+  if (/FBAN|FBAV|Instagram|WhatsApp|Messenger|Snapchat|TikTok|Line\/|; wv\)|GSA\//i.test(ua)) return 'Estás en el navegador interno de otra app (WhatsApp, Instagram, etc.), que bloquea la cámara. Copiá el enlace y abrilo en Chrome o Safari.';
+  const pp = document.permissionsPolicy || document.featurePolicy;
+  if (pp && pp.allowsFeature && !pp.allowsFeature('camera')) return 'Tu sitio bloquea la cámara con un encabezado Permissions-Policy. En el hosting hay que permitir camera=(self).';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return 'Este navegador no ofrece acceso a la cámara.';
+  return '';
+}
+function camFail(msg){
+  $('hint').textContent = msg + ' Mientras tanto usá "Leer desde foto" o escribí el código.';
+  $('hint').style.color = 'var(--warn)'; $('photoBtn').classList.add('main');
+}
 async function startCam(){
-  stopCam();
-  if (!window.jsQR) { $('hint').textContent = 'No cargó el lector de QR (revisá internet). Usá el código manual.'; return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('hint').textContent = 'Este navegador no permite cámara acá (hace falta HTTPS y abrir la página fuera de una vista previa). Usá "Leer desde foto" o el código manual.'; return; }
+  stopCam(); $('hint').style.color = ''; $('photoBtn').classList.remove('main');
+  if (!window.jsQR) return camFail('No cargó el lector de QR (revisá internet o si tu sitio bloquea cdnjs.cloudflare.com).');
+  const why = whyNoCam(); if (why) return camFail(why);
+  const gum = c => navigator.mediaDevices.getUserMedia(c);
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+    try { stream = await gum({ video: { facingMode: { ideal: 'environment' } }, audio: false }); }
+    catch (e) { if (e.name === 'OverconstrainedError' || e.name === 'NotFoundError') stream = await gum({ video: true, audio: false }); else throw e; }
     const v = $('vid'); v.srcObject = stream; await v.play();
     scanning = true; $('hint').textContent = 'Apuntá la cámara al QR del pase.'; tick();
-  } catch (e) { $('hint').textContent = 'Cámara no disponible (' + (e.name || 'error') + '). Permitila en el navegador o usá "Leer desde foto" / código manual.'; }
+  } catch (e) {
+    const m = { NotAllowedError: 'El permiso de cámara está bloqueado para este sitio. Tocá el candado junto a la dirección > Permisos > Cámara > Permitir, y recargá.',
+      NotFoundError: 'No se encontró ninguna cámara en este dispositivo.', NotReadableError: 'La cámara está siendo usada por otra app. Cerrala e intentá de nuevo.',
+      SecurityError: 'El navegador o el hosting bloquea el acceso a la cámara.' };
+    camFail(m[e.name] || ('Error de cámara: ' + e.name + (e.message ? ' – ' + e.message : '') + '.'));
+  }
+}
+async function techDiag(){
+  let perm = '?'; try { perm = (await navigator.permissions.query({ name: 'camera' })).state; } catch (e) {}
+  $('diag2').textContent = VERSION + ' · HTTPS: ' + (window.isSecureContext === false ? 'no' : 'sí') + ' · incrustada: ' + (window.top !== window.self ? 'sí' : 'no') + ' · permiso cámara: ' + perm;
 }
 function stopCam(){ scanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; }
 
@@ -251,7 +278,7 @@ async function exportAll(){
     Restricciones: g.restricciones, 'Teléfono': g.telefono, Mesa: g.mesa, 'Código': g.codigo, 'Check-in': g.checkin })), 'lista-con-mesas');
 }
 
-refreshCount(); next();
+refreshCount(); techDiag(); next();
 </script>
 </body>
 </html>
