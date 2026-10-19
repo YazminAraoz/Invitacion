@@ -611,9 +611,12 @@
     <p style="font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 1px; color: #120E0C;">DRESS CODE: ELEGANTE</p>
     <p style="font-family: var(--font-heading); font-size: 0.9rem; color: #120E0C; margin-top: 18px;">CÓDIGO ÚNICO DE INVITACIÓN</p>
     <p id="ticketInviteCode" style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; color: #4a121a; margin-top: 4px;">---</p>
-    <p style="font-size: 0.75rem; color: #5a4533; margin-top: 18px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
+    <img id="ticketQR" alt="Código QR único de la invitación" style="display:block;width:112px;height:112px;object-fit:contain;margin:12px auto 0;" />
+    <p style="font-size: 0.75rem; color: #5a4533; margin-top: 12px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
     const WHATSAPP_PHONE = "353892564030";
@@ -851,12 +854,75 @@
       }
     }
 
-    function downloadInvitationPDF() {
+    async function downloadInvitationPDF() {
       if (!confirmedRSVP) {
         alert("Primero confirmá tu asistencia.");
         return;
       }
-      window.print();
+      if (!window.jspdf || !window.QRCode) {
+        alert("No se pudieron cargar las herramientas para crear el PDF. Revisá tu conexión e intentá nuevamente.");
+        return;
+      }
+
+      const r = confirmedRSVP;
+      const qrPayload = JSON.stringify({
+        codigo: r.invitationCode,
+        titular: r.name,
+        asistencia: r.attending,
+        acompanantes: r.guestsCount,
+        evento: "Boda de Yazmin & Gonzalo",
+        fecha: "2027-09-04 12:45",
+        lugar: "Los Cipreses 1, 25 de Mayo 1696, Ministro Rivadavia, Burzaco, Argentina"
+      });
+      const qrDataUrl = await QRCode.toDataURL(qrPayload, { errorCorrectionLevel: "H", margin: 1, width: 420, color: { dark: "#0B1626", light: "#FFFFFF" } });
+      const ticketQr = document.getElementById("ticketQR");
+      ticketQr.src = qrDataUrl;
+      ticketQr.style.display = "block";
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a5" });
+      const W = 210, H = 148;
+      // Fondo marfil y doble marco estilo art déco.
+      pdf.setFillColor(248, 242, 229);
+      pdf.rect(0, 0, W, H, "F");
+      pdf.setDrawColor(197, 160, 89); pdf.setLineWidth(1.1); pdf.rect(5, 5, W - 10, H - 10);
+      pdf.setLineWidth(0.35); pdf.rect(8, 8, W - 16, H - 16);
+      pdf.setFillColor(11, 22, 38); pdf.rect(9, 9, W - 18, 22, "F");
+      pdf.setTextColor(224, 192, 120);
+      pdf.setFont("times", "bold"); pdf.setFontSize(20);
+      pdf.text("Yazmin  &  Gonzalo", W / 2, 19, { align: "center" });
+      pdf.setFont("times", "normal"); pdf.setFontSize(8);
+      pdf.text("PASE OFICIAL DE INVITACIÓN  ·  04.09.2027", W / 2, 26, { align: "center" });
+
+      // Separador vertical entre los datos y el QR.
+      pdf.setDrawColor(197, 160, 89); pdf.setLineWidth(0.6); pdf.line(143, 38, 143, 130);
+      pdf.setTextColor(18, 14, 12);
+      pdf.setFont("times", "bold"); pdf.setFontSize(11); pdf.text("INVITACIÓN PERSONAL", 17, 43);
+      pdf.setFont("times", "normal"); pdf.setFontSize(10);
+      pdf.text(`Invitado/a: ${r.name}`, 17, 54, { maxWidth: 118 });
+      pdf.text(`Asistencia: ${r.attending}`, 17, 63);
+      pdf.text(`Acompañantes: ${String(r.guestsCount)}${r.guestNames.length ? " — " + r.guestNames.join(", ") : ""}`, 17, 72, { maxWidth: 119 });
+      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("FECHA Y HORA", 17, 86);
+      pdf.setFont("times", "normal"); pdf.setFontSize(10); pdf.text("Sábado 4 de septiembre de 2027 · 12:45 hs", 17, 93);
+      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("LUGAR", 17, 103);
+      pdf.setFont("times", "normal"); pdf.setFontSize(9);
+      pdf.text("Los Cipreses 1", 17, 110);
+      pdf.text("25 de Mayo 1696, Ministro Rivadavia", 17, 116);
+      pdf.text("Burzaco, Almirante Brown, Argentina", 17, 122);
+      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("DRESS CODE: ELEGANTE", 17, 131);
+
+      pdf.addImage(qrDataUrl, "PNG", 151, 43, 43, 43);
+      pdf.setTextColor(11, 22, 38); pdf.setFont("times", "bold"); pdf.setFontSize(9);
+      pdf.text("CÓDIGO ÚNICO", 172.5, 96, { align: "center" });
+      pdf.setFont("courier", "bold"); pdf.setFontSize(10);
+      pdf.text(r.invitationCode, 172.5, 103, { align: "center" });
+      pdf.setFont("times", "italic"); pdf.setFontSize(8);
+      pdf.text("Presentá este pase al ingresar", 172.5, 113, { align: "center" });
+      pdf.text("al evento. El QR identifica", 172.5, 118, { align: "center" });
+      pdf.text("esta invitación.", 172.5, 123, { align: "center" });
+
+      const safeName = r.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "invitado";
+      pdf.save(`Invitacion_Yazmin_Gonzalo_${safeName}_${r.invitationCode}.pdf`);
     }
 
     function continueToWhatsApp() {
