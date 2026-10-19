@@ -372,15 +372,19 @@
 
     /* ESTILOS PARA IMPRESIÓN/DESCARGA DEL PASE DIGITAL (PDF CON FONDO DRESSCODE2) */
     @media print {
-      body * { visibility: hidden; }
-      #printableTicket, #printableTicket * { visibility: visible; }
+      @page { size: A5 landscape; margin: 0; }
+      body { margin: 0 !important; background: white !important; }
+      body * { visibility: hidden !important; }
+      #printableTicket, #printableTicket * { visibility: visible !important; }
       #printableTicket {
-        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        position: fixed !important; left: 0 !important; top: 0 !important;
+        width: 210mm !important; height: 148mm !important; min-height: 0 !important;
+        margin: 0 !important; padding: 12mm !important; box-sizing: border-box !important;
         display: flex !important; flex-direction: column; justify-content: center; align-items: center;
+        overflow: hidden; border-radius: 0 !important; box-shadow: none !important;
         background-image: url('dresscode2.jpg') !important; background-size: cover !important;
         background-position: center !important; color: #120E0C !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
     }
     #printableTicket {
@@ -610,13 +614,14 @@
     </div>
     <p style="font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 1px; color: #120E0C;">DRESS CODE: ELEGANTE</p>
     <p style="font-family: var(--font-heading); font-size: 0.9rem; color: #120E0C; margin-top: 18px;">CÓDIGO ÚNICO DE INVITACIÓN</p>
+    <p id="ticketInviteName" style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: bold; color: #120E0C;">Invitado/a</p>
+    <p id="ticketInviteAttendance" style="font-size: 0.9rem; color: #120E0C;"></p>
+    <p id="ticketInviteGuests" style="font-size: 0.85rem; color: #120E0C;"></p>
     <p id="ticketInviteCode" style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; color: #4a121a; margin-top: 4px;">---</p>
     <img id="ticketQR" alt="Código QR único de la invitación" style="display:block;width:112px;height:112px;object-fit:contain;margin:12px auto 0;" />
     <p style="font-size: 0.75rem; color: #5a4533; margin-top: 12px;">Por favor presentar este pase digital o impreso al ingresar al salón.</p>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbw9ZKjmPyXI5HzVnm9mkHMAyO2cZrnzf91d1eMn_xl6KBcwIAWyA-PcNl8yeS_M7VJQ/exec";
     const WHATSAPP_PHONE = "353892564030";
@@ -852,52 +857,16 @@
       document.getElementById('printableTicket').style.display = 'none';
     }
 
-    function loadExternalScript(url) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('No se pudo cargar ' + url));
-        document.head.appendChild(script);
-      });
-    }
-
-    async function ensurePdfLibraries() {
-      // Intentar un CDN alternativo si jsDelivr no cargó las librerías.
-      if (!window.jspdf) {
-        try { await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'); } catch (e) {}
-      }
-      if (!window.jspdf) {
-        try { await loadExternalScript('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'); } catch (e) {}
-      }
-      if (!window.QRCode) {
-        try { await loadExternalScript('https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js'); } catch (e) {}
-      }
-      return !!(window.jspdf && window.QRCode && typeof window.QRCode.toDataURL === 'function');
-    }
-
     async function downloadInvitationPDF() {
       if (!confirmedRSVP) {
         alert("Primero confirmá tu asistencia.");
         return;
       }
 
-      const downloadButton = document.querySelector('#postConfirmActions button[onclick="downloadInvitationPDF()"]');
-      if (downloadButton) { downloadButton.disabled = true; downloadButton.textContent = 'PREPARANDO PDF...'; }
-      let librariesReady = false;
-      try {
-        librariesReady = await ensurePdfLibraries();
-      } catch (e) {
-        librariesReady = false;
-      }
-      if (!librariesReady) {
-        if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
-        alert('No se pudieron cargar las herramientas para crear el PDF. Comprobá que tengas conexión a internet y abrí la invitación en Chrome o Edge.');
-        return;
-      }
-
       const r = confirmedRSVP;
+      const downloadButton = document.querySelector('#postConfirmActions button[onclick="downloadInvitationPDF()"]');
+      if (downloadButton) { downloadButton.disabled = true; downloadButton.textContent = 'PREPARANDO PASE...'; }
+
       const qrPayload = JSON.stringify({
         evento: "Boda Yazmin y Gonzalo",
         codigo: r.invitationCode,
@@ -907,64 +876,33 @@
         fecha: "04/09/2027",
         lugar: "Los Cipreses 1, 25 de Mayo 1696, Ministro Rivadavia, Burzaco"
       });
-      let qrDataUrl;
-      try {
-        qrDataUrl = await window.QRCode.toDataURL(qrPayload, { errorCorrectionLevel: "H", margin: 1, width: 420, color: { dark: "#0B1626", light: "#FFFFFF" } });
-      } catch (err) {
+      const ticket = document.getElementById('printableTicket');
+      const ticketQr = document.getElementById('ticketQR');
+      document.getElementById('ticketInviteName').textContent = r.name;
+      document.getElementById('ticketInviteCode').textContent = r.invitationCode;
+      document.getElementById('ticketInviteAttendance').textContent = 'Asistencia: ' + r.attending;
+      document.getElementById('ticketInviteGuests').textContent = 'Acompañantes: ' + String(r.guestsCount) + (r.guestNames.length ? ' — ' + r.guestNames.join(', ') : '');
+
+      // El QR se solicita como imagen independiente; no requiere la librería QRCode.
+      ticketQr.onload = () => {
+        ticket.style.display = 'flex';
         if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
-        alert('No se pudo generar el código QR. Revisá tu conexión e intentá nuevamente.');
-        console.error(err);
-        return;
-      }
-      const ticketQr = document.getElementById("ticketQR");
-      if (ticketQr) { ticketQr.src = qrDataUrl; ticketQr.style.display = "block"; }
-
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a5" });
-      const W = 210, H = 148;
-      // Fondo marfil y doble marco estilo art déco.
-      pdf.setFillColor(248, 242, 229);
-      pdf.rect(0, 0, W, H, "F");
-      pdf.setDrawColor(197, 160, 89); pdf.setLineWidth(1.1); pdf.rect(5, 5, W - 10, H - 10);
-      pdf.setLineWidth(0.35); pdf.rect(8, 8, W - 16, H - 16);
-      pdf.setFillColor(11, 22, 38); pdf.rect(9, 9, W - 18, 22, "F");
-      pdf.setTextColor(224, 192, 120);
-      pdf.setFont("times", "bold"); pdf.setFontSize(20);
-      pdf.text("Yazmin  &  Gonzalo", W / 2, 19, { align: "center" });
-      pdf.setFont("times", "normal"); pdf.setFontSize(8);
-      pdf.text("PASE OFICIAL DE INVITACIÓN  ·  04.09.2027", W / 2, 26, { align: "center" });
-
-      // Separador vertical entre los datos y el QR.
-      pdf.setDrawColor(197, 160, 89); pdf.setLineWidth(0.6); pdf.line(143, 38, 143, 130);
-      pdf.setTextColor(18, 14, 12);
-      pdf.setFont("times", "bold"); pdf.setFontSize(11); pdf.text("INVITACIÓN PERSONAL", 17, 43);
-      pdf.setFont("times", "normal"); pdf.setFontSize(10);
-      pdf.text(`Invitado/a: ${r.name}`, 17, 54, { maxWidth: 118 });
-      pdf.text(`Asistencia: ${r.attending}`, 17, 63);
-      pdf.text(`Acompañantes: ${String(r.guestsCount)}${r.guestNames.length ? " — " + r.guestNames.join(", ") : ""}`, 17, 72, { maxWidth: 119 });
-      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("FECHA Y HORA", 17, 86);
-      pdf.setFont("times", "normal"); pdf.setFontSize(10); pdf.text("Sábado 4 de septiembre de 2027 · 12:45 hs", 17, 93);
-      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("LUGAR", 17, 103);
-      pdf.setFont("times", "normal"); pdf.setFontSize(9);
-      pdf.text("Los Cipreses 1", 17, 110);
-      pdf.text("25 de Mayo 1696, Ministro Rivadavia", 17, 116);
-      pdf.text("Burzaco, Almirante Brown, Argentina", 17, 122);
-      pdf.setFont("times", "bold"); pdf.setFontSize(9); pdf.text("DRESS CODE: ELEGANTE", 17, 131);
-
-      pdf.addImage(qrDataUrl, "PNG", 151, 43, 43, 43);
-      pdf.setTextColor(11, 22, 38); pdf.setFont("times", "bold"); pdf.setFontSize(9);
-      pdf.text("CÓDIGO ÚNICO", 172.5, 96, { align: "center" });
-      pdf.setFont("courier", "bold"); pdf.setFontSize(10);
-      pdf.text(r.invitationCode, 172.5, 103, { align: "center" });
-      pdf.setFont("times", "italic"); pdf.setFontSize(8);
-      pdf.text("Presentá este pase al ingresar", 172.5, 113, { align: "center" });
-      pdf.text("al evento. El QR identifica", 172.5, 118, { align: "center" });
-      pdf.text("esta invitación.", 172.5, 123, { align: "center" });
-
-      const safeName = r.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "invitado";
-      pdf.save(`Invitacion_Yazmin_Gonzalo_${safeName}_${r.invitationCode}.pdf`);
-      if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
+        window.setTimeout(() => window.print(), 250);
+      };
+      ticketQr.onerror = () => {
+        ticketQr.onload = null;
+        ticketQr.onerror = null;
+        ticket.style.display = 'none';
+        if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
+        alert('No se pudo cargar el QR. Revisá la conexión a internet e intentá nuevamente.');
+      };
+      ticketQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&format=png&data=' + encodeURIComponent(qrPayload);
     }
+
+    window.addEventListener('afterprint', () => {
+      const ticket = document.getElementById('printableTicket');
+      if (ticket) ticket.style.display = 'none';
+    });
 
     function continueToWhatsApp() {
       if (!confirmedRSVP) {
