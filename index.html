@@ -847,11 +847,34 @@
       statusDiv.textContent = "Confirmación registrada. Descargá tu invitación en PDF antes de continuar a WhatsApp.";
       document.getElementById('postConfirmActions').style.display = 'block';
       submitBtn.style.display = 'none';
-      document.getElementById('printableTicket').style.display = 'block';
-      const modalCard = document.querySelector('#rsvpEnvelopeModal .section-card');
-      if (modalCard && document.getElementById('printableTicket').parentElement !== modalCard) {
-        modalCard.appendChild(document.getElementById('printableTicket'));
+      // El pase se genera directamente como PDF; no mostrar la plantilla HTML
+      // sin QR, para evitar que aparezca el icono de imagen rota.
+      document.getElementById('printableTicket').style.display = 'none';
+    }
+
+    function loadExternalScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('No se pudo cargar ' + url));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function ensurePdfLibraries() {
+      // Intentar un CDN alternativo si jsDelivr no cargó las librerías.
+      if (!window.jspdf) {
+        try { await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'); } catch (e) {}
       }
+      if (!window.jspdf) {
+        try { await loadExternalScript('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'); } catch (e) {}
+      }
+      if (!window.QRCode) {
+        try { await loadExternalScript('https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js'); } catch (e) {}
+      }
+      return !!(window.jspdf && window.QRCode && typeof window.QRCode.toDataURL === 'function');
     }
 
     async function downloadInvitationPDF() {
@@ -859,8 +882,18 @@
         alert("Primero confirmá tu asistencia.");
         return;
       }
-      if (!window.jspdf || !window.QRCode) {
-        alert("No se pudieron cargar las herramientas para crear el PDF. Revisá tu conexión e intentá nuevamente.");
+
+      const downloadButton = document.querySelector('#postConfirmActions button[onclick="downloadInvitationPDF()"]');
+      if (downloadButton) { downloadButton.disabled = true; downloadButton.textContent = 'PREPARANDO PDF...'; }
+      let librariesReady = false;
+      try {
+        librariesReady = await ensurePdfLibraries();
+      } catch (e) {
+        librariesReady = false;
+      }
+      if (!librariesReady) {
+        if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
+        alert('No se pudieron cargar las herramientas para crear el PDF. Comprobá que tengas conexión a internet y abrí la invitación en Chrome o Edge.');
         return;
       }
 
@@ -874,10 +907,17 @@
         fecha: "04/09/2027",
         lugar: "Los Cipreses 1, 25 de Mayo 1696, Ministro Rivadavia, Burzaco"
       });
-      const qrDataUrl = await QRCode.toDataURL(qrPayload, { errorCorrectionLevel: "H", margin: 1, width: 420, color: { dark: "#0B1626", light: "#FFFFFF" } });
+      let qrDataUrl;
+      try {
+        qrDataUrl = await window.QRCode.toDataURL(qrPayload, { errorCorrectionLevel: "H", margin: 1, width: 420, color: { dark: "#0B1626", light: "#FFFFFF" } });
+      } catch (err) {
+        if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
+        alert('No se pudo generar el código QR. Revisá tu conexión e intentá nuevamente.');
+        console.error(err);
+        return;
+      }
       const ticketQr = document.getElementById("ticketQR");
-      ticketQr.src = qrDataUrl;
-      ticketQr.style.display = "block";
+      if (ticketQr) { ticketQr.src = qrDataUrl; ticketQr.style.display = "block"; }
 
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a5" });
@@ -923,6 +963,7 @@
 
       const safeName = r.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "invitado";
       pdf.save(`Invitacion_Yazmin_Gonzalo_${safeName}_${r.invitationCode}.pdf`);
+      if (downloadButton) { downloadButton.disabled = false; downloadButton.textContent = 'DESCARGAR INVITACIÓN EN PDF'; }
     }
 
     function continueToWhatsApp() {
