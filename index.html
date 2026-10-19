@@ -618,7 +618,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYvRx2KOdwJB92-G2ybahXxcF4BiNYcHEkGEiBWl86B6S92yl9DMGfG96eeJf9o-8b9g/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbw9ZKjmPyXI5HzVnm9mkHMAyO2cZrnzf91d1eMn_xl6KBcwIAWyA-PcNl8yeS_M7VJQ/exec";
     const WHATSAPP_PHONE = "353892564030";
 
     let mediaRecorder = null, audioChunks = [], audioBase64Data = null, isRecording = false;
@@ -866,13 +866,13 @@
 
       const r = confirmedRSVP;
       const qrPayload = JSON.stringify({
+        evento: "Boda Yazmin y Gonzalo",
         codigo: r.invitationCode,
-        titular: r.name,
+        invitado: r.name,
         asistencia: r.attending,
         acompanantes: r.guestsCount,
-        evento: "Boda de Yazmin & Gonzalo",
-        fecha: "2027-09-04 12:45",
-        lugar: "Los Cipreses 1, 25 de Mayo 1696, Ministro Rivadavia, Burzaco, Argentina"
+        fecha: "04/09/2027",
+        lugar: "Los Cipreses 1, 25 de Mayo 1696, Ministro Rivadavia, Burzaco"
       });
       const qrDataUrl = await QRCode.toDataURL(qrPayload, { errorCorrectionLevel: "H", margin: 1, width: 420, color: { dark: "#0B1626", light: "#FFFFFF" } });
       const ticketQr = document.getElementById("ticketQR");
