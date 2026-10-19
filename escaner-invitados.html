@@ -18,9 +18,9 @@ header h1{font:700 1rem/1 var(--h);letter-spacing:2px;color:var(--gold2)}
 header span{font-size:.95rem;opacity:.8}
 main{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 18px;overflow-y:auto;max-width:560px;width:100%;margin:0 auto}
 .hide{display:none!important}
-.view{position:relative;aspect-ratio:1;width:100%;background:#000;border:1px solid var(--gold);border-radius:6px;overflow:hidden}
+.view{position:relative;aspect-ratio:1;width:100%;background:#000;border:1px solid var(--gold);border-radius:6px;overflow:hidden;isolation:isolate}
 video{width:100%;height:100%;object-fit:cover}
-.frame{position:absolute;inset:18%;border:2px solid var(--gold2);border-radius:10px;box-shadow:0 0 0 999px rgba(11,22,38,.45)}
+.frame{position:absolute;inset:18%;border:2px solid var(--gold2);border-radius:10px;pointer-events:none}
 .msg{text-align:center;opacity:.85}
 input,button,select{font:inherit;border-radius:4px}
 input{width:100%;padding:12px;background:var(--mid2);border:1px solid rgba(197,160,89,.5);color:var(--parch)}
@@ -56,7 +56,9 @@ label{display:block;margin:8px 0 4px;opacity:.85}
   <section id="scan" class="hide" style="display:flex;flex-direction:column;gap:14px">
     <div class="view"><video id="vid" playsinline muted></video><div class="frame"></div></div>
     <p class="msg" id="hint">Apuntá la cámara al QR del pase.</p>
-    <div class="row"><input id="manual" placeholder="Código manual (YG-XXXXXXXXXX)" autocapitalize="characters"><button onclick="lookup(manual.value)">BUSCAR</button></div>
+    <div class="row"><button onclick="startCam()">ACTIVAR CÁMARA</button><button onclick="$('photo').click()">LEER DESDE FOTO</button></div>
+    <input id="photo" type="file" accept="image/*" capture="environment" class="hide" onchange="readPhoto(this)">
+    <div class="row"><input id="manual" placeholder="Código manual (YG-XXXXXXXXXX)" autocapitalize="characters" onkeydown="if(event.key==='Enter')lookup(this.value)"><button onclick="lookup(manual.value)">BUSCAR</button></div>
     <div class="tools">
       <button onclick="exportLog()">EXCEL: INGRESOS</button>
       <button onclick="exportAll()">EXCEL: LISTA Y MESAS</button>
@@ -98,24 +100,41 @@ async function api(params, body){
 }
 
 async function startCam(){
+  stopCam();
+  if (!window.jsQR) { $('hint').textContent = 'No cargó el lector de QR (revisá internet). Usá el código manual.'; return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('hint').textContent = 'Este navegador no permite cámara acá (hace falta HTTPS y abrir la página fuera de una vista previa). Usá "Leer desde foto" o el código manual.'; return; }
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
-    $('vid').srcObject = stream; await $('vid').play();
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+    const v = $('vid'); v.srcObject = stream; await v.play();
     scanning = true; $('hint').textContent = 'Apuntá la cámara al QR del pase.'; tick();
-  } catch (e) { $('hint').textContent = 'No se pudo abrir la cámara. Permitila en el navegador (requiere HTTPS) o usá el código manual.'; }
+  } catch (e) { $('hint').textContent = 'Cámara no disponible (' + (e.name || 'error') + '). Permitila en el navegador o usá "Leer desde foto" / código manual.'; }
 }
 function stopCam(){ scanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; }
 
 const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+function decode(src, w, h){
+  const k = Math.min(1, 900 / Math.max(w, h)); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+  cx.drawImage(src, 0, 0, cv.width, cv.height);
+  const d = cx.getImageData(0, 0, cv.width, cv.height);
+  return jsQR(d.data, d.width, d.height, { inversionAttempts: 'attemptBoth' });
+}
 function tick(){
   if (!scanning) return;
   const v = $('vid');
-  if (v.readyState === v.HAVE_ENOUGH_DATA) {
-    cv.width = v.videoWidth; cv.height = v.videoHeight; cx.drawImage(v, 0, 0);
-    const q = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+  if (v.readyState >= 2 && v.videoWidth) {
+    const q = decode(v, v.videoWidth, v.videoHeight);
     if (q && q.data) { scanning = false; navigator.vibrate && navigator.vibrate(80); return handleQR(q.data); }
   }
-  requestAnimationFrame(tick);
+  setTimeout(() => requestAnimationFrame(tick), 80);
+}
+function readPhoto(inp){
+  const f = inp.files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const q = decode(img, img.naturalWidth, img.naturalHeight); inp.value = '';
+    if (q && q.data) handleQR(q.data); else $('hint').textContent = 'No se encontró un QR en esa foto. Probá de nuevo más cerca y con buena luz.';
+  };
+  img.src = URL.createObjectURL(f);
 }
 
 function handleQR(raw){
