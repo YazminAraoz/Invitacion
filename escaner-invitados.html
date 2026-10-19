@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ingreso · Yazmin & Gonzalo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--mid:#0B1626;--mid2:#182B45;--gold:#C5A059;--gold2:#E0C078;--parch:#F4EAD5;--ink:#120E0C;--ok:#6FBF8B;--warn:#E0A84A;--bad:#D9695F;
+--h:'Cinzel',serif;--b:'Cormorant Garamond',serif}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--mid);color:var(--parch);font:500 19px/1.4 var(--b);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(197,160,89,.35)}
+header h1{font:700 1rem/1 var(--h);letter-spacing:2px;color:var(--gold2)}
+header span{font-size:.95rem;opacity:.8}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 18px;overflow-y:auto;max-width:560px;width:100%;margin:0 auto}
+.hide{display:none!important}
+.view{position:relative;aspect-ratio:1;width:100%;background:#000;border:1px solid var(--gold);border-radius:6px;overflow:hidden}
+video{width:100%;height:100%;object-fit:cover}
+.frame{position:absolute;inset:18%;border:2px solid var(--gold2);border-radius:10px;box-shadow:0 0 0 999px rgba(11,22,38,.45)}
+.msg{text-align:center;opacity:.85}
+input,button,select{font:inherit;border-radius:4px}
+input{width:100%;padding:12px;background:var(--mid2);border:1px solid rgba(197,160,89,.5);color:var(--parch)}
+input:focus,button:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.row{display:flex;gap:10px}
+button{padding:13px 16px;border:1px solid var(--gold);background:transparent;color:var(--gold2);font:700 .85rem var(--h);letter-spacing:1.5px;cursor:pointer}
+button.main{background:var(--gold);color:var(--ink)}
+button:disabled{opacity:.5}
+.ficha{background:var(--parch);color:var(--ink);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--warn)}
+.ficha.ok{border-color:var(--ok)}.ficha.bad{border-color:var(--bad)}
+.ficha .st{font:700 .8rem var(--h);letter-spacing:1.5px}
+.ficha h2{font:700 1.7rem/1.1 var(--h)}
+.mesa{display:flex;align-items:baseline;gap:12px;padding:10px 0;border-block:1px solid rgba(18,14,12,.25)}
+.mesa b{font:700 4rem/1 var(--h);color:#4a121a}
+.mesa input{background:#fff;color:var(--ink);border-color:#4a121a;width:110px;font:700 1.6rem var(--h);text-align:center}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px}dt{opacity:.65}dd{font-weight:700}
+.tools{display:flex;gap:10px;flex-wrap:wrap}.tools button{flex:1;font-size:.7rem}
+label{display:block;margin:8px 0 4px;opacity:.85}
+</style>
+</head>
+<body>
+<header><h1>INGRESO</h1><span id="count">0 ingresos</span></header>
+<main>
+  <!-- Configuración inicial -->
+  <section id="setup" class="hide">
+    <p class="msg">Conectá el escáner con tu planilla (se pide una sola vez en este dispositivo).</p>
+    <label for="url">URL de la Web App (Apps Script)</label><input id="url" placeholder="https://script.google.com/macros/s/…/exec">
+    <label for="pin">PIN del personal</label><input id="pin" type="password">
+    <button class="main" style="margin-top:14px;width:100%" onclick="saveCfg()">GUARDAR</button>
+  </section>
+
+  <!-- Escáner -->
+  <section id="scan" class="hide" style="display:flex;flex-direction:column;gap:14px">
+    <div class="view"><video id="vid" playsinline muted></video><div class="frame"></div></div>
+    <p class="msg" id="hint">Apuntá la cámara al QR del pase.</p>
+    <div class="row"><input id="manual" placeholder="Código manual (YG-XXXXXXXXXX)" autocapitalize="characters"><button onclick="lookup(manual.value)">BUSCAR</button></div>
+    <div class="tools">
+      <button onclick="exportLog()">EXCEL: INGRESOS</button>
+      <button onclick="exportAll()">EXCEL: LISTA Y MESAS</button>
+      <button onclick="resetCfg()">AJUSTES</button>
+    </div>
+  </section>
+
+  <!-- Ficha de invitado -->
+  <section id="card" class="hide" style="display:flex;flex-direction:column;gap:14px"></section>
+</main>
+
+<script>
+const API_URL = "";  // opcional: pegá acá la URL de la Web App para no pedirla en cada dispositivo
+const $ = id => document.getElementById(id);
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+let cfg = { url: API_URL || store.get('esc_url') || '', pin: store.get('esc_pin') || '' };
+let log = JSON.parse(store.get('esc_log') || '[]');
+let scanning = false, stream = null, current = null;
+const show = id => ['setup','scan','card'].forEach(s => $(s).classList.toggle('hide', s !== id));
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = d => { const t = new Date(d); return isNaN(t) ? String(d) : t.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}); };
+const refreshCount = () => $('count').textContent = log.length + (log.length === 1 ? ' ingreso' : ' ingresos');
+
+function saveCfg(){
+  cfg.url = $('url').value.trim() || cfg.url; cfg.pin = $('pin').value.trim();
+  if (!cfg.url || !cfg.pin) return alert('Completá la URL y el PIN.');
+  store.set('esc_url', cfg.url); store.set('esc_pin', cfg.pin); start();
+}
+function resetCfg(){ stopCam(); $('url').value = cfg.url; $('pin').value = ''; show('setup'); }
+
+async function api(params, body){
+  const u = new URL(cfg.url);
+  if (body) { // POST como text/plain para evitar preflight CORS
+    const r = await fetch(cfg.url, { method:'POST', body: JSON.stringify({ ...body, pin: cfg.pin }) });
+    return r.json();
+  }
+  Object.entries({ ...params, pin: cfg.pin }).forEach(([k,v]) => u.searchParams.set(k, v));
+  return (await fetch(u)).json();
+}
+
+async function startCam(){
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
+    $('vid').srcObject = stream; await $('vid').play();
+    scanning = true; $('hint').textContent = 'Apuntá la cámara al QR del pase.'; tick();
+  } catch (e) { $('hint').textContent = 'No se pudo abrir la cámara. Permitila en el navegador (requiere HTTPS) o usá el código manual.'; }
+}
+function stopCam(){ scanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; }
+
+const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+function tick(){
+  if (!scanning) return;
+  const v = $('vid');
+  if (v.readyState === v.HAVE_ENOUGH_DATA) {
+    cv.width = v.videoWidth; cv.height = v.videoHeight; cx.drawImage(v, 0, 0);
+    const q = jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+    if (q && q.data) { scanning = false; navigator.vibrate && navigator.vibrate(80); return handleQR(q.data); }
+  }
+  requestAnimationFrame(tick);
+}
+
+function handleQR(raw){
+  let code = '';
+  try { code = JSON.parse(raw).codigo; } catch (e) {}
+  if (!code) { const m = raw.match(/YG-[A-Z0-9]+/i); code = m ? m[0] : raw.trim(); }
+  lookup(code);
+}
+
+async function lookup(code){
+  code = String(code || '').trim().toUpperCase(); if (!code) return;
+  stopCam(); $('hint').textContent = 'Buscando…';
+  try {
+    const r = await api({ action: 'guest', code });
+    if (!r.ok) return renderError(r.error, code);
+    renderCard(r.guest, code);
+  } catch (e) { renderError('Sin conexión con la planilla. Revisá internet y la URL en Ajustes.', code); }
+}
+
+function renderError(msg, code){
+  $('card').innerHTML = `<div class="ficha bad"><span class="st">PASE NO VÁLIDO</span><h2>${esc(msg)}</h2><p>Código leído: ${esc(code)}</p></div>
+  <button class="main" onclick="next()">ESCANEAR OTRO</button>`;
+  show('card');
+}
+
+function renderCard(g, code){
+  current = g;
+  const attends = /^s/i.test(String(g.asistencia).trim());
+  const already = !!g.checkin;
+  const cls = !attends ? 'bad' : already ? '' : 'ok';
+  const st = !attends ? 'NO CONFIRMÓ ASISTENCIA' : already ? 'YA INGRESÓ · ' + fmt(g.checkin) : 'LISTA DE INVITADOS · PRIMER INGRESO';
+  const mesa = g.mesa !== '' && g.mesa != null
+    ? `<b id="mesaVal">${esc(g.mesa)}</b>`
+    : `<input id="mesaIn" type="number" min="1" inputmode="numeric" placeholder="Nº"><span>Sin mesa asignada. Elegí una.</span>`;
+  $('card').innerHTML = `<div class="ficha ${cls}">
+    <span class="st">${esc(st)}</span><h2>${esc(g.nombre)}</h2>
+    <div class="mesa"><span>Mesa</span>${mesa}</div>
+    <dl><dt>Acompañantes</dt><dd>${esc(g.acompanantes ?? 0)}</dd>
+    ${g.nombresAcompanantes && g.nombresAcompanantes !== '-' ? `<dt>Nombres</dt><dd>${esc(g.nombresAcompanantes)}</dd>` : ''}
+    <dt>Restricciones</dt><dd>${esc(g.restricciones || 'Ninguna')}</dd>
+    <dt>Teléfono</dt><dd>${esc(g.telefono || '-')}</dd>
+    ${g.comentarios && g.comentarios !== '-' ? `<dt>Comentarios</dt><dd>${esc(g.comentarios)}</dd>` : ''}
+    <dt>Código</dt><dd>${esc(g.codigo)}</dd></dl></div>
+  <button class="main" id="okBtn" onclick="confirmEntry()">${already ? 'GUARDAR MESA Y VOLVER' : 'REGISTRAR INGRESO'}</button>
+  <button onclick="next()">CANCELAR</button>`;
+  show('card');
+}
+
+async function confirmEntry(){
+  const g = current, btn = $('okBtn'), inp = $('mesaIn');
+  const mesa = inp ? inp.value.trim() : '';
+  if (inp && !mesa) return alert('Asigná un número de mesa antes de registrar.');
+  btn.disabled = true; btn.textContent = 'GUARDANDO…';
+  try {
+    const r = await api(null, { action: 'update', code: g.codigo, mesa, checkin: true });
+    if (!r.ok) throw new Error(r.error);
+    const u = r.guest;
+    if (!g.checkin) { log.push({ Hora: new Date().toLocaleString('es-AR'), Código: u.codigo, Nombre: u.nombre, Asistencia: u.asistencia,
+      Acompañantes: u.acompanantes, 'Nombres acompañantes': u.nombresAcompanantes, Restricciones: u.restricciones, Mesa: u.mesa });
+      store.set('esc_log', JSON.stringify(log)); refreshCount(); }
+    next();
+  } catch (e) { btn.disabled = false; btn.textContent = 'REINTENTAR'; alert('No se pudo guardar: ' + e.message); }
+}
+
+function next(){ $('manual').value = ''; show('scan'); startCam(); }
+
+function download(rows, name){
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Invitados');
+  XLSX.writeFile(wb, name + '.xlsx');
+}
+function exportLog(){ if (!log.length) return alert('Todavía no hay ingresos registrados en este dispositivo.'); download(log, 'ingresos-boda'); }
+async function exportAll(){
+  try {
+    const r = await api({ action: 'list' }); if (!r.ok) throw new Error(r.error);
+    download(r.guests.map(g => ({ Nombre: g.nombre, Asistencia: g.asistencia, Acompañantes: g.acompanantes, 'Nombres acompañantes': g.nombresAcompanantes,
+      Restricciones: g.restricciones, Teléfono: g.telefono, Mesa: g.mesa, Código: g.codigo, 'Check-in': g.checkin })), 'lista-con-mesas');
+  } catch (e) { alert('No se pudo descargar la lista: ' + e.message); }
+}
+
+function start(){ refreshCount(); if (!cfg.url || !cfg.pin) return show('setup'); next(); }
+start();
+</script>
+</body>
+</html>
